@@ -53,10 +53,19 @@ ar.set_density('g/cm3', 0.001225)
 
 # Criação do conjunto de materiais
 materials = openmc.Materials([cobalto, aco, csi, agua, ar])
+materials.cross_sections = "/home/thalles/git/GammaMass/endfb-viii.0-hdf5/cross_sections.xml"
 materials.export_to_xml()
 #print(materials)
 
 
+
+colors = {
+    cobalto: 'blue',
+    aco: 'yellow',
+    ar: 'pink',
+    csi: 'black',
+    agua: 'gray',
+}
 
 
 
@@ -106,12 +115,11 @@ tarugo_cell.region = -tarugo_superficie & +plane_z_min_tarugo & -plane_z_max_tar
 tarugo_cell.fill = aco
 
 # Detector de Cristal de CsI
-CsI_start_point=(0,12.32,21.4)
-CsI_end_point = (0,17.32,21.4)
+
+radius_CsI=2
+NaI_cyl = openmc.YCylinder(x0=0.0, z0=21.4, r=radius_CsI)
 plane_y_min = openmc.YPlane(y0=12.32)
 plane_y_max = openmc.YPlane(y0=17.32)
-radius_CsI=2
-NaI_cyl=openmc.model.cylinder_from_points(CsI_start_point, CsI_end_point, radius_CsI)
 
 detector_cell = openmc.Cell(name='Detector de CsI')
 detector_cell.region = -NaI_cyl & +plane_y_min & -plane_y_max
@@ -119,20 +127,19 @@ detector_cell.fill = csi
 
 # Ar
 vazio_box = openmc.model.RectangularPrism(width=30, height=50, origin=(0, 0, 0), boundary_type='vacuum')
-plane_z_max_vazio=openmc.ZPlane(z0=24.4)
-plane_z_min_vazio=openmc.ZPlane(z0=-1)
-vazio_box_completo= -vazio_box & +plane_z_min_vazio & -plane_z_max_vazio
+plane_z_max_vazio=openmc.ZPlane(z0=24.4, boundary_type='vacuum')
+plane_z_min_vazio=openmc.ZPlane(z0=-1, boundary_type='vacuum')
 
 ar_cell = openmc.Cell(name='Ar')
-ar_cell.region =  ~-H2O_cyl & ~-tarugo_superficie & ~-NaI_cyl & ~vazio_box_completo & -plane_z_max_vazio & +plane_z_min_vazio
+ar_cell.region =  -vazio_box & +plane_z_min_vazio & -plane_z_max_vazio
 ar_cell.fill = ar
 
 # Vacuo
-vazio_cell = openmc.Cell(name='Vácuo Exterior')
-vazio_cell.region = +vazio_box & +plane_z_max_vazio & -plane_z_min_vazio
+#vazio_cell = openmc.Cell(name='Vácuo Exterior')
+#vazio_cell.region = +vazio_box & +plane_z_max_vazio & -plane_z_min_vazio
 
 # Criação do universo
-universe_1 = openmc.Universe(cells=[fonte_cell, agua_cell, tarugo_cell, detector_cell, ar_cell, vazio_cell])
+universe_1 = openmc.Universe(cells=[fonte_cell, agua_cell, tarugo_cell, detector_cell, ar_cell])
 #universe_1.plot(width=(50,50), origin=(0,0,0), basis='xy')
 geometry = openmc.Geometry()
 geometry.root_universe = universe_1
@@ -160,10 +167,11 @@ geometry.export_to_xml()
 plot = openmc.Plot()
 plot.filename = 'geometry_plot.png'  
 plot.basis = ('yz')
-plot.width = (40 , 40)
-plot.pixels = (400, 400)
-plot.origin = (0, 0, 22)
-#plot.color_by='materials'
+plot.width = (60 , 30)
+plot.pixels = (6000, 3000)
+plot.origin = (0, 0, 11)
+plot.color_by = 'material'
+plot.colors = colors
 plots = openmc.Plots([plot])
 plot.show_edges = True  # Mostrar bordas das células
 plot.show_labels = True  # Mostrar rótulos das células
@@ -246,7 +254,7 @@ settings.photon_transport=True
 settings.run_mode='fixed source'
 settings.export_to_xml()
 
-openmc.run()
+#openmc.run()
 
 
 

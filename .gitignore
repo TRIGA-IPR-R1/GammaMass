@@ -2,6 +2,7 @@
 *.xml
 *.h5
 *.png
+*.ppm
 #Gerados pelo github para python
 # Byte-compiled / optimized / DLL files
 __pycache__/
