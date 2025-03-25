@@ -2,6 +2,21 @@ import openmc
 import numpy as np
 import openmc.model
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ======================
 # Materiais
 # ======================
@@ -40,6 +55,26 @@ ar.set_density('g/cm3', 0.001225)
 materials = openmc.Materials([cobalto, aco, csi, agua, ar])
 materials.export_to_xml()
 #print(materials)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ======================
 # Geometria (& intersection, > union,  ~ complement.)
@@ -103,6 +138,22 @@ geometry = openmc.Geometry()
 geometry.root_universe = universe_1
 geometry.export_to_xml()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ======================
 # Parâmetros de Plotagem
 # ======================
@@ -126,6 +177,21 @@ openmc.plot_geometry()
 
 
 #secao_transversal = openmc.Plot.from_geometry(geometry)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ======================
@@ -163,7 +229,8 @@ source = openmc.IndependentSource(
     space=space_dist,
     angle=openmc.stats.Isotropic(),  # Ângulo isotrópico
     energy=energy_dist,              # Espectro de energia para Co-60
-    strength=3.7e7                   # Intensidade da fonte (1 mCi ou 0,7mCi?)
+    strength=3.7e7,                   # Intensidade da fonte (1 mCi ou 0,7mCi?)
+    particle='photon'
 )
 
 # ======================
@@ -171,11 +238,15 @@ source = openmc.IndependentSource(
 # ======================
 
 settings = openmc.Settings()
+settings.output = {'tallies': False}
 settings.source = source
 settings.batches = 100  # Número de batches para simulação
-settings.inactive = 10  # Batches inativos
 settings.particles = int(3E6)
- 
+settings.photon_transport=True
+settings.run_mode='fixed source'
+settings.export_to_xml()
+
+openmc.run()
 
 
 
