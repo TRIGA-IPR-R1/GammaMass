@@ -57,8 +57,6 @@ materials.cross_sections = "/home/thalles/git/GammaMass/endfb-viii.0-hdf5/cross_
 materials.export_to_xml()
 #print(materials)
 
-
-
 colors = {
     cobalto: 'blue',
     aco: 'yellow',
@@ -66,21 +64,6 @@ colors = {
     csi: 'black',
     agua: 'gray',
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -106,8 +89,10 @@ agua_cell.fill = agua
 
 # Tarugo de Aço Altura 7.4-24.4 !! FALTA ARRUMAR ELE SENDO ALTURA NEGATIVA
 tarugo_superficie = openmc.model.RectangularPrism(width=6.75, height=6.75, axis = 'z', origin=(0,0,0))
-plane_z_min_tarugo = openmc.ZPlane(z0=7.4)
-plane_z_max_tarugo = openmc.ZPlane(z0=24.4) 
+BOTTOM_TARUGO = 7.4
+UPPER_TARUGO  = 24
+plane_z_min_tarugo = openmc.ZPlane(z0=BOTTOM_TARUGO)
+plane_z_max_tarugo = openmc.ZPlane(z0=UPPER_TARUGO) 
 
 
 tarugo_cell = openmc.Cell(name='Tarugo de Aço')
@@ -126,17 +111,27 @@ detector_cell.region = -NaI_cyl & +plane_y_min & -plane_y_max
 detector_cell.fill = csi
 
 # Ar
-vazio_box = openmc.model.RectangularPrism(width=30, height=50, origin=(0, 0, 0), boundary_type='vacuum')
-plane_z_max_vazio=openmc.ZPlane(z0=24.4, boundary_type='vacuum')
-plane_z_min_vazio=openmc.ZPlane(z0=-1, boundary_type='vacuum')
+plane_y_max_vazio = openmc.YPlane(y0=25, boundary_type='vacuum')
+plane_y_min_vazio = openmc.YPlane(y0=-25, boundary_type='vacuum')
+plane_x_max_vazio = openmc.XPlane(x0=15, boundary_type='vacuum')
+plane_x_min_vazio = openmc.XPlane(x0=-15, boundary_type='vacuum')
+plane_z_max_vazio = openmc.ZPlane(z0=27, boundary_type='vacuum')
+plane_z_min_vazio = openmc.ZPlane(z0=-1, boundary_type='vacuum')
+
+### O EIXO 'Y' É NA HORIZONTAL DO DESENHO E O 'Z' NA VERTICAL DO DESENHO ###
 
 ar_cell = openmc.Cell(name='Ar')
-ar_cell.region =  -vazio_box & +plane_z_min_vazio & -plane_z_max_vazio
+plane_esquerda_tarugo = openmc.YPlane(y0=-6.75/2)
+# Todas as parte de ar em uma só célula
+ar_cell.region =  (-plane_y_max_vazio & +plane_y_max & -plane_z_max_vazio & +plane_z_min_vazio |
+                  -plane_y_max & +plane_y_min & +NaI_cyl & -plane_z_max_vazio & +plane_z_min_vazio |
+                  -plane_y_min & +tarugo_superficie & +plane_esquerda_tarugo & -plane_z_max_vazio & +plane_z_min_vazio |
+                  -tarugo_superficie & +plane_z_min_vazio & -plane_z_min_tarugo |
+                  -tarugo_superficie & +plane_z_max_tarugo & -plane_z_max_vazio |
+                  +H2O_cyl & -plane_z_max_vazio & +plane_z_min_vazio & +plane_y_min_vazio & -plane_esquerda_tarugo |
+                  -H2O_cyl & -plane_z_max_vazio & +plane_z_max |
+                  -H2O_cyl & +plane_z_min_vazio & -plane_z_min)
 ar_cell.fill = ar
-
-# Vacuo
-#vazio_cell = openmc.Cell(name='Vácuo Exterior')
-#vazio_cell.region = +vazio_box & +plane_z_max_vazio & -plane_z_min_vazio
 
 # Criação do universo
 universe_1 = openmc.Universe(cells=[fonte_cell, agua_cell, tarugo_cell, detector_cell, ar_cell])
@@ -144,20 +139,6 @@ universe_1 = openmc.Universe(cells=[fonte_cell, agua_cell, tarugo_cell, detector
 geometry = openmc.Geometry()
 geometry.root_universe = universe_1
 geometry.export_to_xml()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -169,7 +150,7 @@ plot.filename = 'geometry_plot.png'
 plot.basis = ('yz')
 plot.width = (60 , 30)
 plot.pixels = (6000, 3000)
-plot.origin = (0, 0, 11)
+plot.origin = (0, 0, 13)
 plot.color_by = 'material'
 plot.colors = colors
 plots = openmc.Plots([plot])
