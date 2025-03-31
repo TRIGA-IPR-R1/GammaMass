@@ -7,16 +7,6 @@ import openmc.model
 
 
 
-
-
-
-
-
-
-
-
-
-
 # ======================
 # Materiais
 # ======================
@@ -72,7 +62,7 @@ colors = {
 # Geometria (& intersection, > union,  ~ complement.)
 # ======================
 # Fonte (Co-60)
-Co60_cyl=openmc.ZCylinder(x0=0, y0=-13.34, r=0.35) 
+Co60_cyl=openmc.ZCylinder(x0=0, y0=-11.64, r=0.35) 
 plane_z_min = openmc.ZPlane(z0=0)
 plane_z_max = openmc.ZPlane(z0=23.4)
 
@@ -149,7 +139,7 @@ plot = openmc.Plot()
 plot.filename = 'geometry_plot.png'  
 plot.basis = ('yz')
 plot.width = (60 , 30)
-plot.pixels = (6000, 3000)
+plot.pixels = (3000, 1500)
 plot.origin = (0, 0, 13)
 plot.color_by = 'material'
 plot.colors = colors
@@ -236,6 +226,5 @@ settings.run_mode='fixed source'
 settings.export_to_xml()
 
 #openmc.run()
-
 
 
