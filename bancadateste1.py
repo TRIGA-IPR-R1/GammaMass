@@ -7,16 +7,6 @@ import openmc.model
 
 
 
-
-
-
-
-
-
-
-
-
-
 # ======================
 # Materiais
 # ======================
@@ -53,7 +43,7 @@ ar.set_density('g/cm3', 0.001225)
 
 # Criação do conjunto de materiais
 materials = openmc.Materials([cobalto, aco, csi, agua, ar])
-materials.cross_sections = "/home/thalles/git/GammaMass/endfb-viii.0-hdf5/cross_sections.xml"
+#materials.cross_sections = "/home/thalles/git/GammaMass/endfb-viii.0-hdf5/cross_sections.xml"
 materials.export_to_xml()
 #print(materials)
 
@@ -72,7 +62,7 @@ colors = {
 # Geometria (& intersection, > union,  ~ complement.)
 # ======================
 # Fonte (Co-60)
-Co60_cyl=openmc.ZCylinder(x0=0, y0=-13.34, r=0.35) 
+Co60_cyl=openmc.ZCylinder(x0=0, y0=-13.34, r=0.35) #
 plane_z_min = openmc.ZPlane(z0=0)
 plane_z_max = openmc.ZPlane(z0=23.4)
 
@@ -149,7 +139,7 @@ plot = openmc.Plot()
 plot.filename = 'geometry_plot.png'  
 plot.basis = ('yz')
 plot.width = (60 , 30)
-plot.pixels = (6000, 3000)
+plot.pixels = (3000, 1500)
 plot.origin = (0, 0, 13)
 plot.color_by = 'material'
 plot.colors = colors
@@ -222,6 +212,23 @@ source = openmc.IndependentSource(
     particle='photon'
 )
 
+
+# MESH PRA ATIVIDADE DA FONTE
+
+# OUTRO PRA ATIVIDADE NO DETECTOR ?
+
+#filtro_energia_exemplo = openmc.EnergyFilter([1,2])
+particle_foton = openmc.ParticleFilter(bins='photon')
+
+tally_flux = openmc.Tally(name='Fluxo de fótons chegando ao cristal')
+detector_filter = openmc.CellFilter(detector_cell)
+tally_flux.filters.append(particle_foton)
+tally_flux.filters.append(detector_filter)
+tally_flux.scores.append('flux')
+
+tallies = openmc.Tallies([tally_flux])
+tallies.export_to_xml()
+
 # ======================
 # Configurações
 # ======================
@@ -230,12 +237,21 @@ settings = openmc.Settings()
 settings.output = {'tallies': False}
 settings.source = source
 settings.batches = 100  # Número de batches para simulação
-settings.particles = int(3E6)
+settings.particles = 10000
 settings.photon_transport=True
 settings.run_mode='fixed source'
 settings.export_to_xml()
 
-#openmc.run()
 
+###############################################
+## EM CONSTRUÇÃO ##
+for i in range[7.4,24.4]:
+    UPPER_TARUGO = UPPER_TARUGO + i
+    sp = openmc.StatePoint('statepoint.100.h5')
 
+    flux = sp.get_tally(scores=['flux'], name='Fluxo de fótons chegando ao cristal')
+    flux_mean    = flux.mean
+    flux_std_dev = flux.std_dev
+    openmc.run()
 
+print('Fluxo de fótons chegando ao cristal:', flux_mean[0][0][0], '+/-', flux_std_dev[0][0][0])
