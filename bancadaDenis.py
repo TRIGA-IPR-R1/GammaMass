@@ -1,7 +1,7 @@
 import openmc
 import numpy as np
 import openmc.model
-
+import matplotlib.pyplot as plt
 
 
 
@@ -43,7 +43,7 @@ ar.set_density('g/cm3', 0.001225)
 
 # Criação do conjunto de materiais
 materials = openmc.Materials([cobalto, aco, csi, agua, ar])
-materials.cross_sections = "/home/thalles/git/GammaMass/endfb-viii.0-hdf5/cross_sections.xml"
+#materials.cross_sections = "/home/thalles/git/GammaMass/endfb-viii.0-hdf5/cross_sections.xml"
 materials.export_to_xml()
 #print(materials)
 
@@ -62,7 +62,7 @@ colors = {
 # Geometria (& intersection, > union,  ~ complement.)
 # ======================
 # Fonte (Co-60)
-Co60_cyl=openmc.ZCylinder(x0=0, y0=-11.64, r=0.35) 
+Co60_cyl=openmc.ZCylinder(x0=0, y0=-13.34, r=0.35) #
 plane_z_min = openmc.ZPlane(z0=0)
 plane_z_max = openmc.ZPlane(z0=23.4)
 
@@ -80,13 +80,15 @@ agua_cell.fill = agua
 # Tarugo de Aço Altura 7.4-24.4 !! FALTA ARRUMAR ELE SENDO ALTURA NEGATIVA
 tarugo_superficie = openmc.model.RectangularPrism(width=6.75, height=6.75, axis = 'z', origin=(0,0,0))
 BOTTOM_TARUGO = 7.4
-UPPER_TARUGO  = 24
+#UPPER_TARUGO  = 24
+UPPER_TARUGO  = BOTTOM_TARUGO + 16.6                   ### Topo do tarugo em função do plano inferior, pra variar o inferior no loop !!!!
 plane_z_min_tarugo = openmc.ZPlane(z0=BOTTOM_TARUGO)
 plane_z_max_tarugo = openmc.ZPlane(z0=UPPER_TARUGO) 
 
 
 tarugo_cell = openmc.Cell(name='Tarugo de Aço')
-tarugo_cell.region = -tarugo_superficie & +plane_z_min_tarugo & -plane_z_max_tarugo 
+tarugo_cell.region = -tarugo_superficie
+#tarugo_cell.region = -tarugo_superficie & +plane_z_min_tarugo & -plane_z_max_tarugo  ## isso aqui ta definindo o tarugo como se ele fosse de 7.4 até 24? união com superfície?
 tarugo_cell.fill = aco
 
 # Detector de Cristal de CsI
@@ -159,20 +161,6 @@ openmc.plot_geometry()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ======================
 # Fonte
 # ======================
@@ -212,6 +200,23 @@ source = openmc.IndependentSource(
     particle='photon'
 )
 
+
+# MESH PRA ATIVIDADE DA FONTE
+
+# OUTRO PRA ATIVIDADE NO DETECTOR ?
+
+#filtro_energia_exemplo = openmc.EnergyFilter([1,2])
+particle_foton = openmc.ParticleFilter(bins='photon')
+
+tally_flux = openmc.Tally(name='Fluxo de fótons chegando ao cristal')
+detector_filter = openmc.CellFilter(detector_cell)
+tally_flux.filters.append(particle_foton)
+tally_flux.filters.append(detector_filter)
+tally_flux.scores.append('flux')
+
+tallies = openmc.Tallies([tally_flux])
+tallies.export_to_xml()
+
 # ======================
 # Configurações
 # ======================
@@ -220,11 +225,47 @@ settings = openmc.Settings()
 settings.output = {'tallies': False}
 settings.source = source
 settings.batches = 100  # Número de batches para simulação
-settings.particles = int(3E6)
+settings.particles = 10000
 settings.photon_transport=True
 settings.run_mode='fixed source'
 settings.export_to_xml()
 
-#openmc.run()
+
+
+## EM CONSTRUÇÃO ### 
+###############################################
+# definir altura do tarugo em função da altura do tarugo (comrpimento = 6,75cm) variando de 7,4 a 24,4 com altura crescendo pra baixo ?? 16.6-> 17 pontos
+# no loop mudar onde o plano da altura bate e torcer pra mudar ele todo
+# isso vai criar interseções com a celula de ar, tem que trocar a definição pra ser FORA DE CELULA TAL em vez de planos !!!!! pedir ajuda pra ver se é isso mesmo
+altura_tarugo = [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16, -17] # ABAIXANDO O TARUGO
+lista_fluxos = []
+lista_std_dev = []
+# Loop para calcular o fluxo de fótons chegando ao cristal em diferentes alturas do tarugo
+for i in altura_tarugo:
+    tarugo_superficie = openmc.model.RectangularPrism(width=6.75, height=6.75, axis = 'z', origin=(0,0,i))
+    sp = openmc.StatePoint('statepoint.100.h5')
+    flux = sp.get_tally(scores=['flux'], name='Fluxo de fótons chegando ao cristal')
+    flux_mean    = flux.mean
+    flux_std_dev = flux.std_dev
+    openmc.run()
+    lista_fluxos.append(flux_mean[0][0][0])
+    lista_std_dev.append(flux_std_dev[0][0][0])
+    #print('Fluxo de fótons chegando ao cristal:', flux_mean[0][0][0], '+/-', flux_std_dev[0][0][0])
+
+# calculo do desvio padrão médio do fluxo no cristal
+medium_std_dev = sum(lista_std_dev) / len(lista_std_dev)
+
+#gráfico fluxo por altura do tarugo
+
+plt.plot(altura_tarugo, lista_fluxos, marker='o')
+plt.gca().invert_xaxis()
+plt.xlabel('Altura do Tarugo (cm)')
+plt.ylabel('Fluxo de Fótons no Cristal (cm²/s)')
+plt.title('Fluxo de Fótons no Cristal vs Altura do Tarugo')
+plt.grid()
+plt.axhline(y=medium_std_dev, color='r', linestyle='--', label='Desvio Padrão Médio')
+plt.legend()
+plt.show()
+
 
 
