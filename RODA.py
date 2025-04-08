@@ -46,9 +46,9 @@ def chdir(nome=None):
 
 
 # Controle das iterações
-UPPER_TARUGO_INICIAL = 25
-UPPER_TARUGO_FINAL= 6
-UPPER_TARUGO_INCREMENTO=-1
+UPPER_TARUGO_INICIAL = 23.4
+UPPER_TARUGO_FINAL= 8.4
+UPPER_TARUGO_INCREMENTO=-0.1
 
 #Lista de resultados
 UPPER_TARUGO_lista = []
@@ -133,7 +133,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
     agua_cell = openmc.Cell(name='Água')
     agua_cell.region = -H2O_cyl & +Co60_cyl & +plane_z_min & -plane_z_max
-    agua_cell.fill = agua
+    agua_cell.fill = ar
 
 
     # Tarugo de Aço Altura 7.4-24.4 !! FALTA ARRUMAR ELE SENDO ALTURA NEGATIVA
@@ -230,8 +230,10 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
     # Distribuição espacial (raio entre 0 e 0.35 cm, cilindro ao longo do eixo z)
     radius_dist = openmc.stats.Uniform(a=0, b=0.35)  # Raio entre 0 e 0.35 cm
+
     length_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 
                     17, 18, 19, 20, 21, 22, 23.46]  # Pontos de extensão em z
+    
     prob_length = [0, 1324, 1088, 1137, 1226, 1304, 1357, 1397, 1483, 1551, 1653, 
                 1728, 1810, 1897, 2002, 2116, 2219, 2306, 2414, 2463, 2476, 
                 2813, 2898, 3310]  # Distribuição ao longo de z (normalizar)
