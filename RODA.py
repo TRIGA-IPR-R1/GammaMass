@@ -47,7 +47,7 @@ def chdir(nome=None):
 
 # Controle das iterações
 UPPER_TARUGO_INICIAL = 25
-UPPER_TARUGO_FINAL= -1
+UPPER_TARUGO_FINAL= 6
 UPPER_TARUGO_INCREMENTO=-1
 
 #Lista de resultados
@@ -56,7 +56,7 @@ lista_fluxos = []
 lista_std_dev = []
 
 #Cria uma pasta RODA_DATA com todos os resultados dentro
-mkdir(nome="RODA",data=True,voltar=False)
+mkdir(nome="Bancada_variavel",data=True,voltar=False)
 
 UPPER_TARUGO = UPPER_TARUGO_INICIAL
 while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
@@ -101,7 +101,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
     # Criação do conjunto de materiais
     materials = openmc.Materials([cobalto, aco, csi, agua, ar])
-    #materials.cross_sections = "/home/thalles/git/GammaMass/endfb-viii.0-hdf5/cross_sections.xml"
+    materials.cross_sections = "/home/jefferson/GammaMass/nuclear-data/endfb-viii.0-hdf5/cross_sections.xml"
     materials.export_to_xml()
     #print(materials)
 
@@ -169,7 +169,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     plane_x_max_vazio = openmc.XPlane(x0=15, boundary_type='vacuum')
     plane_x_min_vazio = openmc.XPlane(x0=-15, boundary_type='vacuum')
     plane_z_max_vazio = openmc.ZPlane(z0=30, boundary_type='vacuum')
-    plane_z_min_vazio = openmc.ZPlane(z0=-20, boundary_type='vacuum')
+    plane_z_min_vazio = openmc.ZPlane(z0=-15, boundary_type='vacuum')
 
     ### O EIXO 'Y' É NA HORIZONTAL DO DESENHO E O 'Z' NA VERTICAL DO DESENHO ###
 
@@ -338,161 +338,41 @@ for i, (flux, std) in enumerate(zip(lista_fluxos, lista_std_dev)):
 
 
 
+    # ======================
+    # MatPlotLib
+    # ======================
 
 
+# PLT styles
 
-# calculo do desvio padrão médio do fluxo no cristal
-#medium_std_dev = sum(lista_std_dev) / len(lista_std_dev)
+# ['Solarize_Light2', '_classic_test_patch', '_mpl-gallery', '_mpl-gallery-nogrid', 'bmh', 'classic', 'dark_background', 'fast', 'fivethirtyeight', 
+# 'ggplot', 'grayscale', 'seaborn-v0_8', 'seaborn-v0_8-bright', 'seaborn-v0_8-colorblind', 'seaborn-v0_8-dark', 'seaborn-v0_8-dark-palette', 
+# 'seaborn-v0_8-darkgrid', 'seaborn-v0_8-deep', 'seaborn-v0_8-muted', 'seaborn-v0_8-notebook', 'seaborn-v0_8-paper', 'seaborn-v0_8-pastel', 
+# 'seaborn-v0_8-poster', 'seaborn-v0_8-talk', 'seaborn-v0_8-ticks', 'seaborn-v0_8-white', 'seaborn-v0_8-whitegrid', 'tableau-colorblind10']
+
+# Colors
+
+# xkcd color survey, prefixed with 'xkcd:' (e.g., 'xkcd:sky blue'; case insensitive) https://xkcd.com/color/rgb/
+# Tableau Colors from the 'T10' categorical palette:
+# {'tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan'}
 
 plt.style.use("seaborn-v0_8-paper")
 
 # gráfico fluxo por altura do tarugo
-plt.plot(UPPER_TARUGO_lista, lista_fluxos, marker='o')
-plt.xlabel('Altura do Tarugo (cm)')
-plt.ylabel('Fluxo de Fótons no Cristal (cm²/s)')
-plt.title('Fluxo de Fótons no Cristal vs Altura do Tarugo')
-plt.grid()
+plt.plot(UPPER_TARUGO_lista, lista_fluxos, marker='o', color='xkcd:dark pink', linestyle='-', linewidth=1)
+plt.xlabel('Altura do Tarugo (cm)',fontsize=20)
+plt.ylabel('Fluxo de Fótons no Cristal (cm²/s)', fontsize=20)
+plt.title('Fluxo de Fótons no Cristal vs Altura do Tarugo', fontsize=24)
+
+#Gridlines
+plt.grid(True, which='both', axis='y', linestyle='--', linewidth=0.2, color='gray')
+plt.grid(True, which='both', axis='x', linestyle='--', linewidth=0.2, color='gray')
+plt.tick_params(axis='both', which='major', labelsize=16)
+
 #plt.axhline(y=lista_std_dev, color='r', linestyle='--', label='Desvio Padrão Médio')
-plt.legend()
+plt.legend(fontsize=22)
 
 plt.tight_layout()
 plt.show()
     
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-################### ANTIGO ###############################
-
-
-
-
-
-
-
-
-######################
-######## RUN #########
-# openmc.run()
-
-# sp = openmc.StatePoint('statepoint.100.h5')
-# flux = sp.get_tally(scores=['flux'], name='Fluxo de fótons chegando ao cristal')
-# flux_mean    = flux.mean
-# flux_std_dev = flux.std_dev
-# print('Fluxo de fótons chegando ao cristal:', 	round(flux_mean[0][0][0], 2), '+/-', round(flux_std_dev[0][0][0],2))
-
-####             DAQUI PRA CIMA TUDO FUNCIONA 
-
-
-# conferir definição do prisma (tarugo)
-# definir plano de baixo do tarugo em função do de cima - altura do tarugo 
-# pra ficar fácil de variar ele inteiro mexendo em um plano só
-# isso vai criar interseções com a celula de ar, tem que trocar a definição pra ser FORA DE CELULA TAL em vez de planos ?
-
-
-###############################################
-###############################################
-# ## EM CONSTRUÇÃO ##
-# inicio = 7.4
-# fim = 24.4
-#incremento = 1.0
-#altura_tarugo = []
-#lista_fluxos = []
-#lista_std_dev = []
-#
-## Diretório original
-#diretorio_original = os.getcwd()
-#
-## Variáveis iniciais
-#BOTTOM_TARUGO = 7.4
-#incremento = 1
-#
-## Loop para criar pastas e rodar simulações
-#while BOTTOM_TARUGO <= 24.4:
-#    # Criar pasta para a iteração atual
-#    nova_pasta = f"simulacao_tarugo_{BOTTOM_TARUGO:.1f}"
-#    os.makedirs(nova_pasta, exist_ok=True)
-#    print(f"\n=== Processando altura: {BOTTOM_TARUGO:.1f} ===")
-#
-#
-#    # Simulação 
-#    print(f"Executando simulação para altura: {BOTTOM_TARUGO:.1f}")
-#    openmc.run()
-#
-#    # Análise de dados
-#    #sp = openmc.StatePoint(f'statepoint.{settings.batches}.h5')
-#    #flux = sp.get_tally(scores=['flux'], name='Fluxo de fótons chegando ao cristal')
-#    #flux_mean    = flux.mean
-#    #flux_std_dev = flux.std_dev
-#    #lista_fluxos.append(flux_mean[0][0][0])
-#    #lista_std_dev.append(flux_std_dev[0][0][0])
-#    #print('Fluxo de fótons chegando ao cristal:', 	round(flux_mean[0][0][0], 2), '+/-', round(flux_std_dev[0][0][0],2))
-#
-#
-#
-#
-#    # Copiar arquivos de saída para a pasta correspondente
-#    extensoes = ('.h5', '.xml', '.png')
-#    arquivos_saida = [f for f in os.listdir() if f.endswith(extensoes)]
-#    
-#    for arquivo in arquivos_saida:
-#        caminho_destino = os.path.join(nova_pasta, arquivo)
-#        shutil.copy(arquivo, caminho_destino)
-#        print(f"Arquivo {arquivo} copiado para {nova_pasta}")
-#
-#    ## Limpar arquivos temporários do diretório original
-#    #for arquivo in arquivos_saida:
-#    #    if os.path.exists(arquivo):
-#    #        os.remove(arquivo)
-#
-#    # Atualizar altura do tarugo
-#    BOTTOM_TARUGO += incremento
-#
-#
-#
-#
-#
