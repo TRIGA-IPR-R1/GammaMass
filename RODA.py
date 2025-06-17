@@ -101,7 +101,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
     # Criação do conjunto de materiais
     materials = openmc.Materials([cobalto, aco, csi, agua, ar])
-    materials.cross_sections = "/home/jefferson/GammaMass/nuclear-data/endfb-viii.0-hdf5/cross_sections.xml"
+    #materials.cross_sections = "/home/jefferson/GammaMass/nuclear-data/endfb-viii.0-hdf5/cross_sections.xml"
     materials.export_to_xml()
     #print(materials)
 
