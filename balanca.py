@@ -46,7 +46,7 @@ def chdir(nome=None):
 
 
 # Controle das iterações
-UPPER_TARUGO_INICIAL = 3.175
+UPPER_TARUGO_INICIAL = 3.35
 UPPER_TARUGO_FINAL= 18.0
 UPPER_TARUGO_INCREMENTO=0.1
 
@@ -137,12 +137,12 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
 
     # Tarugo de Aço Altura 7.4-24.4 !! FALTA ARRUMAR ELE SENDO ALTURA NEGATIVA
-    tarugo_superficie = openmc.model.RectangularPrism(width=6.75, height=6.75, axis = 'z', origin=(0,0,3.175))
+    tarugo_superficie = openmc.model.RectangularPrism(width=6.75, height=6.75, axis = 'z', origin=(0,0,3.35))
 
 
  
 
-    BOTTOM_TARUGO  = 3.175 
+    BOTTOM_TARUGO  = 3.35
     plane_z_min_tarugo = openmc.ZPlane(z0=BOTTOM_TARUGO)
     plane_z_max_tarugo = openmc.ZPlane(z0=UPPER_TARUGO) 
 
@@ -155,7 +155,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     # Detector de Cristal de CsI
 
     radius_CsI=2
-    NaI_cyl = openmc.YCylinder(x0=0.0, z0=20.175, r=radius_CsI)
+    NaI_cyl = openmc.YCylinder(x0=0.0, z0=20.35, r=radius_CsI)
     plane_y_min = openmc.YPlane(y0=-2.5)
     plane_y_max = openmc.YPlane(y0=2.5)
 
