@@ -1,4 +1,5 @@
 import openmc
+import openmc.stats
 import numpy as np
 import openmc.model
 from matplotlib import pyplot as plt
@@ -46,9 +47,9 @@ def chdir(nome=None):
 
 
 # Controle das iterações
-UPPER_TARUGO_INICIAL = 3.35
-UPPER_TARUGO_FINAL= 18.0
-UPPER_TARUGO_INCREMENTO=0.1
+UPPER_TARUGO_INICIAL = 20.0
+UPPER_TARUGO_FINAL= -60.0
+UPPER_TARUGO_INCREMENTO=-5
 
 #Lista de resultados
 UPPER_TARUGO_lista = []
@@ -121,73 +122,72 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     # ======================
     # Fonte (Co-60)
     Co60_cyl=openmc.YCylinder(x0=0, z0=0, r=0.35) #
-    plane_y_min = openmc.YPlane(y0=-11.7)
-    plane_y_max = openmc.YPlane(y0=11.7)
+    plane_y_min = openmc.YPlane(y0=-31.75)
+    plane_y_max = openmc.YPlane(y0=31.75)
 
     fonte_cell = openmc.Cell(name='Fonte Co60')
     fonte_cell.region = -Co60_cyl & +plane_y_min & -plane_y_max
     fonte_cell.fill = cobalto
 
     # Água
-    H2O_cyl=openmc.YCylinder(x0=0, z0=0, r=6) 
+    H2O_cyl=openmc.YCylinder(x0=0, z0=0, r=3) 
 
     agua_cell = openmc.Cell(name='Água')
     agua_cell.region = -H2O_cyl & +Co60_cyl & +plane_y_min & -plane_y_max
-    agua_cell.fill = ar
+    agua_cell.fill = agua
+
+ #############################################
+    # Tarugo variável
+    tarugo_superficie = openmc.model.RectangularPrism(width=50, height=5, axis = 'x', origin=(0,0,15.85))
 
 
-    # Tarugo de Aço Altura 7.4-24.4 !! FALTA ARRUMAR ELE SENDO ALTURA NEGATIVA
-    tarugo_superficie = openmc.model.RectangularPrism(width=6.75, height=6.75, axis = 'z', origin=(0,0,3.35))
-
-
- 
-
-    BOTTOM_TARUGO  = 3.35
-    plane_z_min_tarugo = openmc.ZPlane(z0=BOTTOM_TARUGO)
-    plane_z_max_tarugo = openmc.ZPlane(z0=UPPER_TARUGO) 
+    BOTTOM_TARUGO  = UPPER_TARUGO -10
+    plane_x_min_tarugo = openmc.XPlane(x0=BOTTOM_TARUGO)
+    plane_x_max_tarugo = openmc.XPlane(x0=UPPER_TARUGO) 
 
 
 
     tarugo_cell = openmc.Cell(name='Tarugo de Aço')
-    tarugo_cell.region = -tarugo_superficie & +plane_z_min_tarugo & -plane_z_max_tarugo
+    tarugo_cell.region = -tarugo_superficie & +plane_x_min_tarugo & -plane_x_max_tarugo
     tarugo_cell.fill = aco
+ ###############################################
+    # esteira
+    esteira_superficie = openmc.model.RectangularPrism(width = 80, height=63.5, axis = 'z', origin=(0,0,10.35))
+    esteira_min = openmc.ZPlane(z0 = 10.35)
+    esteira_max = openmc.ZPlane(z0 = 13.35)
+
+    esteira_cell = openmc.Cell(name='Esteira')
+    esteira_cell.region = -esteira_superficie & -esteira_max & +esteira_min
+    esteira_cell.fill = aco
 
     # Detector de Cristal de CsI
 
-    radius_CsI=2
-    NaI_cyl = openmc.YCylinder(x0=0.0, z0=20.35, r=radius_CsI)
-    plane_y_min = openmc.YPlane(y0=-2.5)
-    plane_y_max = openmc.YPlane(y0=2.5)
+    cristal =  openmc.model.RectangularPrism(width=4, height=4, axis = 'z', origin=(0,0,50.35))
+    plane_z_min = openmc.ZPlane(z0=50.35)
+    plane_z_max = openmc.ZPlane(z0=55.35)
 
     detector_cell = openmc.Cell(name='Detector de CsI')
-    detector_cell.region = -NaI_cyl & +plane_y_min & -plane_y_max
+    detector_cell.region = -cristal & +plane_z_min & -plane_z_max
     detector_cell.fill = csi
 
     # Ar
-    plane_y_max_vazio = openmc.YPlane(y0=25, boundary_type='vacuum')
-    plane_y_min_vazio = openmc.YPlane(y0=-25, boundary_type='vacuum')
-    plane_x_max_vazio = openmc.XPlane(x0=15, boundary_type='vacuum')
-    plane_x_min_vazio = openmc.XPlane(x0=-15, boundary_type='vacuum')
-    plane_z_max_vazio = openmc.ZPlane(z0=30, boundary_type='vacuum')
-    plane_z_min_vazio = openmc.ZPlane(z0=-15, boundary_type='vacuum')
+    plane_y_max_vazio = openmc.YPlane(y0=45, boundary_type='vacuum')
+    plane_y_min_vazio = openmc.YPlane(y0=-45, boundary_type='vacuum')
+    plane_x_max_vazio = openmc.XPlane(x0=80, boundary_type='vacuum')
+    plane_x_min_vazio = openmc.XPlane(x0=-80, boundary_type='vacuum')
+    plane_z_max_vazio = openmc.ZPlane(z0=65, boundary_type='vacuum')
+    plane_z_min_vazio = openmc.ZPlane(z0=-10, boundary_type='vacuum')
 
-    ### O EIXO 'Y' É NA HORIZONTAL DO DESENHO E O 'Z' NA VERTICAL DO DESENHO ###
+  
+    ar_region = (-plane_y_max_vazio & +plane_y_min_vazio & -plane_x_max_vazio & +plane_x_min_vazio & -plane_z_max_vazio &  +plane_z_min_vazio &
+                ~detector_cell.region & ~tarugo_cell.region & ~fonte_cell.region)
+    
+    ar_cell = openmc.Cell(name='Ar', fill=ar, region=ar_region)
+    
 
-    ar_cell = openmc.Cell(name='Ar')
-    plane_esquerda_tarugo = openmc.YPlane(y0=-6.75/2)
-    # Todas as parte de ar em uma só célula
-    ar_cell.region =  (-plane_y_max_vazio & +plane_y_max & -plane_z_max_vazio & +plane_z_min_vazio |
-                    -plane_y_max & +plane_y_min & +NaI_cyl & -plane_z_max_vazio & +plane_z_min_vazio |
-                    -plane_y_min & +tarugo_superficie & +plane_esquerda_tarugo & -plane_z_max_vazio & +plane_z_min_vazio |
-                    -tarugo_superficie & +plane_z_min_vazio & -plane_z_min_tarugo |
-                    -tarugo_superficie & +plane_z_max_tarugo & -plane_z_max_vazio |
-                    +H2O_cyl & -plane_z_max_vazio & +plane_z_min_vazio & +plane_y_min_vazio & -plane_esquerda_tarugo |
-                    -H2O_cyl & -plane_z_max_vazio & +plane_y_max |
-                    -H2O_cyl & +plane_z_min_vazio & -plane_y_min)
-    ar_cell.fill = ar
 
     # Criação do universo
-    universe_1 = openmc.Universe(cells=[fonte_cell, agua_cell, tarugo_cell, detector_cell, ar_cell])
+    universe_1 = openmc.Universe(cells=[fonte_cell, agua_cell, tarugo_cell, detector_cell, ar_cell, esteira_cell])
     #universe_1.plot(width=(50,50), origin=(0,0,0), basis='xy')
     geometry = openmc.Geometry()
     geometry.root_universe = universe_1
@@ -201,7 +201,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     plot = openmc.Plot()
     plot.filename = 'geometry_plot.png'  
     plot.basis = ('yz')
-    plot.width = (60 , 60)
+    plot.width = (200 , 200)
     plot.pixels = (3000, 3000)
     plot.origin = (0, 0, 7)
     plot.color_by = 'material'
@@ -231,41 +231,42 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     # Distribuição espacial (raio entre 0 e 0.35 cm, cilindro ao longo do eixo z)
     radius_dist = openmc.stats.Uniform(a=0, b=0.35)  # Raio entre 0 e 0.35 cm
 
-    length_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 
-                    17, 18, 19, 20, 21, 22, 23.46]  # Pontos de extensão em z
+    # length_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 
+    #                 17, 18, 19, 20, 21, 22, 23.46]  # Pontos de extensão em z
     
-    prob_length = [0, 1324, 1088, 1137, 1226, 1304, 1357, 1397, 1483, 1551, 1653, 
-                1728, 1810, 1897, 2002, 2116, 2219, 2306, 2414, 2463, 2476, 
-                2813, 2898, 3310]  # Distribuição ao longo de z (normalizar)
+    # prob_length = [0, 1324, 1088, 1137, 1226, 1304, 1357, 1397, 1483, 1551, 1653, 
+    #             1728, 1810, 1897, 2002, 2116, 2219, 2306, 2414, 2463, 2476, 
+    #             2813, 2898, 3310]  # Distribuição ao longo de z (normalizar)
 
-    # Normalizando a distribuição probabilística em z
-    total_prob = sum(prob_length)
-    prob_length = [p / total_prob for p in prob_length]
+    # # Normalizando a distribuição probabilística em z
+    # total_prob = sum(prob_length)
+    # prob_length = [p / total_prob for p in prob_length]
 
-    # Distribuição da extensão ao longo de z com probabilidades normalizadas
-    length_dist = openmc.stats.Discrete(length_points, prob_length)
+    # # Distribuição da extensão ao longo de z com probabilidades normalizadas
+    # length_dist = openmc.stats.Discrete(length_points, prob_length)
 
-    # Definindo uma distribuição espacial cilíndrica
-    space_dist = openmc.stats.CylindricalIndependent(
-        r=radius_dist,
-        phi=openmc.stats.Uniform(0, 2 * 3.141592653589793),  # Ângulo uniforme ao longo de 360°
-        y=length_dist,
-        origin=(0, 0, 0)  # Origem centralizada no ponto definido
-    )
+    x_dist = openmc.stats.Uniform(-0.35, 0.35)
+    y_dist = openmc.stats.Uniform(-31.75, 31.75)
+    z_dist = openmc.stats.Uniform(-0.35, 0.35)
+
+    y_space_dist = openmc.stats.CartesianIndependent(x=x_dist, y=y_dist, z=z_dist)
+
+    # # Definindo uma distribuição espacial cilíndrica
+    # space_dist = openmc.stats.CylindricalIndependent(
+    #     r=radius_dist,
+    #     phi=openmc.stats.Uniform(0, 2 * 3.141592653589793),  # Ângulo uniforme ao longo de 360°
+    #     z=length_dist,
+    #     origin=(0, 0, 0)  # Origem centralizada no ponto definido
+    # )
 
     # Criando a fonte com parâmetros definidos
     source = openmc.IndependentSource(
-        space=space_dist,
+        space=y_space_dist,
         angle=openmc.stats.Isotropic(),  # Ângulo isotrópico
         energy=energy_dist,              # Espectro de energia para Co-60
         strength=3.7e7,                   # Intensidade da fonte (1 mCi ou 0,7mCi?)
         particle='photon'
     )
-
-
-    # MESH PRA ATIVIDADE DA FONTE
-
-    # OUTRO PRA ATIVIDADE NO DETECTOR ?
 
     filtro_energia_exemplo = openmc.EnergyFilter([1,2])
     particle_foton = openmc.ParticleFilter(bins='photon')
