@@ -49,7 +49,7 @@ def chdir(nome=None):
 # Controle das iterações
 UPPER_TARUGO_INICIAL = 20.0
 UPPER_TARUGO_FINAL= -60.0
-UPPER_TARUGO_INCREMENTO=-5
+UPPER_TARUGO_INCREMENTO=-0.5
 
 #Lista de resultados
 UPPER_TARUGO_lista = []
@@ -138,36 +138,49 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
  #############################################
     # Tarugo variável
-    tarugo_superficie = openmc.model.RectangularPrism(width=50, height=5, axis = 'x', origin=(0,0,15.85))
+    #tarugo_superficie = openmc.model.RectangularPrism(width=50, height=5, axis = 'x', origin=(0,0,15.85))
 
 
     BOTTOM_TARUGO  = UPPER_TARUGO -10
     plane_x_min_tarugo = openmc.XPlane(x0=BOTTOM_TARUGO)
-    plane_x_max_tarugo = openmc.XPlane(x0=UPPER_TARUGO) 
+    plane_x_max_tarugo = openmc.XPlane(x0=UPPER_TARUGO)
+    plane_y_min_tarugo = openmc.YPlane(y0=-25)
+    plane_y_max_tarugo = openmc.YPlane(y0=25)
+    plane_z_min_tarugo = openmc.ZPlane(z0=13.35)
+    plane_z_max_tarugo = openmc.ZPlane(z0=18.35) 
 
 
 
     tarugo_cell = openmc.Cell(name='Tarugo de Aço')
-    tarugo_cell.region = -tarugo_superficie & +plane_x_min_tarugo & -plane_x_max_tarugo
+    tarugo_cell.region = +plane_x_min_tarugo & -plane_x_max_tarugo & +plane_y_min_tarugo & -plane_y_max_tarugo & +plane_z_min_tarugo & -plane_z_max_tarugo
     tarugo_cell.fill = aco
  ###############################################
     # esteira
-    esteira_superficie = openmc.model.RectangularPrism(width = 80, height=63.5, axis = 'z', origin=(0,0,10.35))
-    esteira_min = openmc.ZPlane(z0 = 10.35)
-    esteira_max = openmc.ZPlane(z0 = 13.35)
+    #esteira_superficie = openmc.model.RectangularPrism(width = 80, height=63.5, axis = 'z', origin=(0,0,10.35))
+
+    esteira_min_z = openmc.ZPlane(z0 = 10.35)
+    esteira_max_z = openmc.ZPlane(z0 = 13.35)
+    esteira_min_x = openmc.XPlane(x0 = -75)
+    esteira_max_x = openmc.XPlane(x0 = 75)
+    esteira_min_y = openmc.YPlane(y0 = -31.75)
+    esteira_max_y = openmc.YPlane(y0 = 31.75)
 
     esteira_cell = openmc.Cell(name='Esteira')
-    esteira_cell.region = -esteira_superficie & -esteira_max & +esteira_min
+    esteira_cell.region = -esteira_max_z & +esteira_min_z & -esteira_max_x & +esteira_min_x & -esteira_max_y & +esteira_min_z
     esteira_cell.fill = aco
 
     # Detector de Cristal de CsI
 
-    cristal =  openmc.model.RectangularPrism(width=4, height=4, axis = 'z', origin=(0,0,50.35))
+    #cristal =  openmc.model.RectangularPrism(width=4, height=4, axis = 'z', origin=(0,0,50.35))
     plane_z_min = openmc.ZPlane(z0=50.35)
     plane_z_max = openmc.ZPlane(z0=55.35)
+    cristal_x_min = openmc.XPlane(x0 =-2)
+    cristal_x_max = openmc.XPlane(x0 =2)
+    cristal_y_min = openmc.YPlane(y0 =-2)
+    cristal_y_max = openmc.YPlane(y0 =2)
 
     detector_cell = openmc.Cell(name='Detector de CsI')
-    detector_cell.region = -cristal & +plane_z_min & -plane_z_max
+    detector_cell.region = +plane_z_min & -plane_z_max & -cristal_x_max & +cristal_x_min & -cristal_y_max & +cristal_y_min
     detector_cell.fill = csi
 
     # Ar
@@ -200,10 +213,10 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     # ======================
     plot = openmc.Plot()
     plot.filename = 'geometry_plot.png'  
-    plot.basis = ('yz')
-    plot.width = (200 , 200)
-    plot.pixels = (3000, 3000)
-    plot.origin = (0, 0, 7)
+    plot.basis = ('xz')
+    plot.width = (165 , 165)
+    plot.pixels = (2000, 2000)
+    plot.origin = (0, 0, 10.35)
     plot.color_by = 'material'
     plot.colors = colors
     plots = openmc.Plots([plot])
@@ -340,7 +353,7 @@ for i, (flux, std) in enumerate(zip(lista_fluxos, lista_std_dev)):
     print(f"Iteração {i+1}: {flux:.2e} ± {std:.2e}")
 
 
-
+print('Fluxos: ', lista_fluxos)
     # ======================
     # MatPlotLib
     # ======================
