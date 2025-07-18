@@ -100,18 +100,30 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     ar.add_nuclide('Ar40', 0.013)
     ar.set_density('g/cm3', 0.001225)
 
+    # Marterial 6 - Carvão
+    carvao = openmc.Material(name='Carvao Hulha')
+    carvao.set_density('g/cm3', 1.4)  
+
+    # Composição elementar (fração em massa)
+    carvao.add_element('C', 0.78)
+    carvao.add_element('H', 0.05)
+    carvao.add_element('O', 0.13)
+    carvao.add_element('N', 0.02)
+    carvao.add_element('S', 0.02)
+
     # Criação do conjunto de materiais
-    materials = openmc.Materials([cobalto, aco, csi, agua, ar])
+    materials = openmc.Materials([cobalto, aco, csi, agua, ar, carvao])
     #materials.cross_sections = "/home/jefferson/GammaMass/nuclear-data/endfb-viii.0-hdf5/cross_sections.xml"
     materials.export_to_xml()
     #print(materials)
 
     colors = {
-        cobalto: 'blue',
+        cobalto: 'green',
         aco: 'yellow',
         ar: 'pink',
         csi: 'black',
-        agua: 'gray',
+        agua: 'blue',
+        carvao: 'grey'
     }
 
 
@@ -153,7 +165,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
     tarugo_cell = openmc.Cell(name='Tarugo de Aço')
     tarugo_cell.region = +plane_x_min_tarugo & -plane_x_max_tarugo & +plane_y_min_tarugo & -plane_y_max_tarugo & +plane_z_min_tarugo & -plane_z_max_tarugo
-    tarugo_cell.fill = aco
+    tarugo_cell.fill = carvao
  ###############################################
     # esteira
     #esteira_superficie = openmc.model.RectangularPrism(width = 80, height=63.5, axis = 'z', origin=(0,0,10.35))
