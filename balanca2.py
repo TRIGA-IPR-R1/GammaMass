@@ -47,9 +47,9 @@ def chdir(nome=None):
 
 
 # Controle das iterações
-UPPER_TARUGO_INICIAL = 20.0
-UPPER_TARUGO_FINAL= -60.0
-UPPER_TARUGO_INCREMENTO=-0.5
+UPPER_TARUGO_INICIAL = 5.0
+UPPER_TARUGO_FINAL= 5.0
+UPPER_TARUGO_INCREMENTO=-0.2
 
 #Lista de resultados
 UPPER_TARUGO_lista = []
@@ -102,7 +102,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
     # Marterial 6 - Carvão
     carvao = openmc.Material(name='Carvao Hulha')
-    carvao.set_density('g/cm3', 1.4)  
+    carvao.set_density('g/cm3', 0.913)  
 
     # Composição elementar (fração em massa)
     carvao.add_element('C', 0.78)
@@ -118,10 +118,10 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     #print(materials)
 
     colors = {
-        cobalto: 'green',
-        aco: 'yellow',
-        ar: 'pink',
-        csi: 'black',
+        cobalto: 'red',
+        aco: 'black',
+        ar: (173, 216, 230),
+        csi: 'yellow',
         agua: 'blue',
         carvao: 'grey'
     }
@@ -141,13 +141,6 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     fonte_cell.region = -Co60_cyl & +plane_y_min & -plane_y_max
     fonte_cell.fill = cobalto
 
-    # Água
-    H2O_cyl=openmc.YCylinder(x0=0, z0=0, r=3) 
-
-    agua_cell = openmc.Cell(name='Água')
-    agua_cell.region = -H2O_cyl & +Co60_cyl & +plane_y_min & -plane_y_max
-    agua_cell.fill = agua
-
  #############################################
     # Tarugo variável
     #tarugo_superficie = openmc.model.RectangularPrism(width=50, height=5, axis = 'x', origin=(0,0,15.85))
@@ -158,8 +151,8 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     plane_x_max_tarugo = openmc.XPlane(x0=UPPER_TARUGO)
     plane_y_min_tarugo = openmc.YPlane(y0=-7.905)
     plane_y_max_tarugo = openmc.YPlane(y0=7.905)
-    plane_z_min_tarugo = openmc.ZPlane(z0=13.35)
-    plane_z_max_tarugo = openmc.ZPlane(z0=29.16) 
+    plane_z_min_tarugo = openmc.ZPlane(z0=10.45)
+    plane_z_max_tarugo = openmc.ZPlane(z0=26.26) 
 
 
 
@@ -171,14 +164,14 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     #esteira_superficie = openmc.model.RectangularPrism(width = 80, height=63.5, axis = 'z', origin=(0,0,10.35))
 
     esteira_min_z = openmc.ZPlane(z0 = 10.35)
-    esteira_max_z = openmc.ZPlane(z0 = 13.35)
+    esteira_max_z = openmc.ZPlane(z0 = 10.45)
     esteira_min_x = openmc.XPlane(x0 = -75)
     esteira_max_x = openmc.XPlane(x0 = 75)
     esteira_min_y = openmc.YPlane(y0 = -31.75)
     esteira_max_y = openmc.YPlane(y0 = 31.75)
 
     esteira_cell = openmc.Cell(name='Esteira')
-    esteira_cell.region = -esteira_max_z & +esteira_min_z & -esteira_max_x & +esteira_min_x & -esteira_max_y & +esteira_min_z
+    esteira_cell.region = -esteira_max_z & +esteira_min_z & -esteira_max_x & +esteira_min_x & -esteira_max_y & +esteira_min_y
     esteira_cell.fill = aco
 
     # Detector de Cristal de CsI
@@ -212,7 +205,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
 
     # Criação do universo
-    universe_1 = openmc.Universe(cells=[fonte_cell, agua_cell, tarugo_cell, detector_cell, ar_cell, esteira_cell])
+    universe_1 = openmc.Universe(cells=[fonte_cell, tarugo_cell, detector_cell, ar_cell, esteira_cell])
     #universe_1.plot(width=(50,50), origin=(0,0,0), basis='xy')
     geometry = openmc.Geometry()
     geometry.root_universe = universe_1
@@ -227,7 +220,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     plot.filename = 'geometry_plot.png'  
     plot.basis = ('xz')
     plot.width = (165 , 165)
-    plot.pixels = (2000, 2000)
+    plot.pixels = (4000, 4000)
     plot.origin = (0, 0, 10.35)
     plot.color_by = 'material'
     plot.colors = colors
@@ -319,7 +312,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     settings.output = {'tallies': False}
     settings.source = source
     settings.batches = 100  # Número de batches para simulação
-    settings.particles = 10000
+    settings.particles = 100000
     settings.photon_transport=True
     settings.run_mode='fixed source'
     settings.export_to_xml()
