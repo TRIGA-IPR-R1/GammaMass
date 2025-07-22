@@ -143,9 +143,6 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
  #############################################
     # Tarugo variável
-    #tarugo_superficie = openmc.model.RectangularPrism(width=50, height=5, axis = 'x', origin=(0,0,15.85))
-
-
     BOTTOM_TARUGO  = UPPER_TARUGO -10
     plane_x_min_tarugo = openmc.XPlane(x0=BOTTOM_TARUGO)
     plane_x_max_tarugo = openmc.XPlane(x0=UPPER_TARUGO)
@@ -161,22 +158,16 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     tarugo_cell.fill = carvao
  ###############################################
     # esteira
-    #esteira_superficie = openmc.model.RectangularPrism(width = 80, height=63.5, axis = 'z', origin=(0,0,10.35))
-
     esteira_min_z = openmc.ZPlane(z0 = 10.35)
     esteira_max_z = openmc.ZPlane(z0 = 10.45)
     esteira_min_x = openmc.XPlane(x0 = -75)
     esteira_max_x = openmc.XPlane(x0 = 75)
-    esteira_min_y = openmc.YPlane(y0 = -31.75)
-    esteira_max_y = openmc.YPlane(y0 = 31.75)
 
     esteira_cell = openmc.Cell(name='Esteira')
-    esteira_cell.region = -esteira_max_z & +esteira_min_z & -esteira_max_x & +esteira_min_x & -esteira_max_y & +esteira_min_y
+    esteira_cell.region = -esteira_max_z & +esteira_min_z & -esteira_max_x & +esteira_min_x & -plane_y_max & +plane_y_min
     esteira_cell.fill = aco
 
     # Detector de Cristal de CsI
-
-    #cristal =  openmc.model.RectangularPrism(width=4, height=4, axis = 'z', origin=(0,0,50.35))
     plane_z_min = openmc.ZPlane(z0=50.35)
     plane_z_max = openmc.ZPlane(z0=55.35)
     cristal_x_min = openmc.XPlane(x0 =-2)
