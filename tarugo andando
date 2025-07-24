@@ -47,7 +47,7 @@ def chdir(nome=None):
 
 
 # Controle das iterações
-UPPER_TARUGO_INICIAL = 3.0
+UPPER_TARUGO_INICIAL = 30.0
 UPPER_TARUGO_FINAL= 20.0
 UPPER_TARUGO_INCREMENTO=-0.25
 
