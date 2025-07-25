@@ -158,7 +158,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     plane_x_max_tarugo = openmc.XPlane(x0=UPPER_TARUGO)
     plane_y_min_tarugo = openmc.YPlane(y0=-7.905)
     plane_y_max_tarugo = openmc.YPlane(y0=7.905)
-    plane_z_min_tarugo = openmc.ZPlane(z0=10.45)
+    plane_z_min_tarugo = openmc.ZPlane(z0=10.45) #
     plane_z_max_tarugo = openmc.ZPlane(z0=26.26) 
 
 
@@ -180,12 +180,12 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     esteira_cell.fill = aco
 
     # Detector de Cristal de CsI
-    plane_z_min = openmc.ZPlane(z0=50.35)
-    plane_z_max = openmc.ZPlane(z0=55.35)
-    cristal_x_min = openmc.XPlane(x0 =-2)
-    cristal_x_max = openmc.XPlane(x0 =2)
-    cristal_y_min = openmc.YPlane(y0 =-2)
-    cristal_y_max = openmc.YPlane(y0 =2)
+    plane_z_min = openmc.ZPlane(z0=52.150)
+    plane_z_max = openmc.ZPlane(z0=55.35) #
+    cristal_x_min = openmc.XPlane(x0 =-2.5) 
+    cristal_x_max = openmc.XPlane(x0 =2.5)
+    cristal_y_min = openmc.YPlane(y0 =-2.5)
+    cristal_y_max = openmc.YPlane(y0 =2.5)
 
     detector_cell = openmc.Cell(name='Detector de CsI')
     detector_cell.region = +plane_z_min & -plane_z_max & -cristal_x_max & +cristal_x_min & -cristal_y_max & +cristal_y_min
@@ -223,7 +223,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     plot.filename = 'geometry_plot.png'  
     plot.basis = ('xz')
     plot.width = (165 , 165)
-    plot.pixels = (4000, 4000)
+    plot.pixels = (400, 400)
     plot.origin = (0, 0, 10.35)
     plot.color_by = 'material'
     plot.colors = colors
@@ -315,7 +315,7 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     settings.output = {'tallies': False}
     settings.source = source
     settings.batches = 100  # Número de batches para simulação
-    settings.particles = 100000
+    settings.particles = 200000
     settings.photon_transport=True
     settings.run_mode='fixed source'
     settings.export_to_xml()
