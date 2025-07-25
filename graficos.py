@@ -3,10 +3,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ##### PARADO ######
-# # gráfico variando detector
-# # caso tarugo 2 (10 x 15.81 x 15.81) com 200000 partículas
-# # todos os valores são 10⁴ com incerteza da ordem de 10²
+##### PARADO ######
+# gráfico variando detector
+# caso tarugo 2 (10 x 15.81 x 15.81) com 200000 partículas
+# todos os valores são 10⁴ com incerteza da ordem de 10²
 d_carvao=[4.778,4.828,4.890,4.986,5.113,5.213,5.323,5.424,5.538,5.615,5.701]
 d_minerio=[3.542,3.547,3.578,3.642,3.722,3.812,3.895,3.971,4.044,4.104,4.170]
 
@@ -16,15 +16,15 @@ d_casos=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 plt.errorbar(
     d_casos, d_carvao, fmt='o-', color='grey',
     ecolor='slategray', capsize=5, linewidth=2, markersize=4,
-    label='(Flux cm²/s coal')
+    label='Coal')
 plt.errorbar(
     d_casos, d_minerio, fmt='o-', color='brown',
     ecolor='slategray', capsize=5, linewidth=2, markersize=4,
-    label='(Flux cm²/s iron ore')
+    label='Iron ore')
 
-plt.ylabel('Flux 10⁴ cm²/s')
-plt.xlabel('Casos do Detector')
-plt.title('Fluxo de Fótons no Detector por Distância do Tarugo')
+plt.ylabel('Counts x 10⁴')
+plt.xlabel('Case # ')
+plt.title('Counts in Detector Cell x Crystal Dimensions Variation')
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
@@ -32,7 +32,7 @@ plt.show()
 
 
 
-# # gráfico variando tarugo
+# # # gráfico variando tarugo
 # # todos os valores são 10⁴ com incerteza da ordem de 10² com 200000 partículas
 # t_minerio=[3.224, 3.281, 3.405, 3.546, 3.708, 3.810, 3.869, 3.919, 3.944, 3.918, 3.839, 3.743, 3.644]
 # t_casos=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ,13]
@@ -40,16 +40,15 @@ plt.show()
 # plt.errorbar(
 #     t_casos, t_minerio, fmt='o-', color='grey',
 #     ecolor='slategray', capsize=5, linewidth=2, markersize=4,
-#     label='(Flux cm²/s iron ore')
+#     label='Iron ore')
 
-# plt.ylabel('Flux 10⁴ cm²/s')
-# plt.xlabel('Casos do tarugo')
-# plt.title('Fluxo de Fótons no Detector por Distância do Tarugo')
+# plt.ylabel('Gamma Counts x 10⁴')
+# plt.xlabel('Case # ')
+# plt.title('Counts in Detector Cell x Bulk Material Geometry')
 # plt.legend()
 # plt.grid(True, alpha=0.3)
 # plt.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 # plt.show()
-
 
 
 
@@ -64,15 +63,15 @@ plt.show()
 # plt.errorbar(
 #     distancias, a_carvao, fmt='o-', color='grey',
 #     ecolor='slategray', capsize=5, linewidth=2, markersize=4,
-#     label='(Flux cm²/s coal')
+#     label='Coal')
 # plt.errorbar(
 #     distancias, a_minerio, fmt='o-', color='brown',
 #     ecolor='slategray', capsize=5, linewidth=2, markersize=4,
-#     label='(Flux cm²/s iron ore')
+#     label='Iron ore')
 
-# plt.ylabel('Flux cm²/s')
-# plt.xlabel('Distance')
-# plt.title('Fluxo de Fótons no Detector por Distância do Tarugo')
+# plt.ylabel('Gamma Counts')
+# plt.xlabel('Displacement')
+# plt.title('Counts in Detector Cell x Bulk Material Position')
 # plt.legend()
 # plt.grid(True, alpha=0.3)
 # plt.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
