@@ -236,14 +236,14 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
     casca_pb = -raiocol_e & +plane_y_min_col & -plane_y_max_col
     interior_col = janela_cell.region | clamping_cell.region | detector_cell.region | disco_cell.region
     colimador_cell.region = casca_pb & ~interior_col
-    colimador_cell.fill = ar
+    colimador_cell.fill = pb
     # pra tirar o colimador, trocar o material para ar!
 
     # Ar
-    plane_y_max_vazio = openmc.YPlane(y0=45, boundary_type='vacuum')
-    plane_y_min_vazio = openmc.YPlane(y0=-45, boundary_type='vacuum')
-    plane_x_max_vazio = openmc.XPlane(x0=80, boundary_type='vacuum')
-    plane_x_min_vazio = openmc.XPlane(x0=-80, boundary_type='vacuum')
+    plane_y_max_vazio = openmc.YPlane(y0=120, boundary_type='vacuum')
+    plane_y_min_vazio = openmc.YPlane(y0=-120, boundary_type='vacuum')
+    plane_x_max_vazio = openmc.XPlane(x0=120, boundary_type='vacuum')
+    plane_x_min_vazio = openmc.XPlane(x0=-120, boundary_type='vacuum')
     plane_z_max_vazio = openmc.ZPlane(z0=75, boundary_type='vacuum')
     plane_z_min_vazio = openmc.ZPlane(z0=-10, boundary_type='vacuum')
 
@@ -298,48 +298,39 @@ while UPPER_TARUGO >= UPPER_TARUGO_FINAL:
 
     # Espectro de energia do Cobalto-60
     energy_dist = openmc.stats.Discrete([1.1732e6, 1.3325e6], [0.5, 0.5])
-
     # Distribuição espacial (raio entre 0 e 0.35 cm, cilindro ao longo do eixo z)
-    radius_dist = openmc.stats.Uniform(a=0, b=0.35)  # Raio entre 0 e 0.35 cm
-
-    # length_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 
-    #                 17, 18, 19, 20, 21, 22, 23.46]  # Pontos de extensão em z
-    
-    # prob_length = [0, 1324, 1088, 1137, 1226, 1304, 1357, 1397, 1483, 1551, 1653, 
-    #             1728, 1810, 1897, 2002, 2116, 2219, 2306, 2414, 2463, 2476, 
-    #             2813, 2898, 3310]  # Distribuição ao longo de z (normalizar)
-
-    # # Normalizando a distribuição probabilística em z
-    # total_prob = sum(prob_length)
-    # prob_length = [p / total_prob for p in prob_length]
-
-    # # Distribuição da extensão ao longo de z com probabilidades normalizadas
-    # length_dist = openmc.stats.Discrete(length_points, prob_length)
-
+    radius_dist = openmc.stats.Uniform(a=0, b=0.35)
     x_dist = openmc.stats.Uniform(-0.35, 0.35)
     y_dist = openmc.stats.Uniform(-30, 30)
     z_dist = openmc.stats.Uniform(-0.35, 0.35)
-
     y_space_dist = openmc.stats.CartesianIndependent(x=x_dist, y=y_dist, z=z_dist)
-
-    # # Definindo uma distribuição espacial cilíndrica
-    # space_dist = openmc.stats.CylindricalIndependent(
-    #     r=radius_dist,
-    #     phi=openmc.stats.Uniform(0, 2 * 3.141592653589793),  # Ângulo uniforme ao longo de 360°
-    #     z=length_dist,
-    #     origin=(0, 0, 0)  # Origem centralizada no ponto definido
-    # )
 
     # Criando a fonte com parâmetros definidos
     source = openmc.IndependentSource(
         space=y_space_dist,
         angle=openmc.stats.Isotropic(),  # Ângulo isotrópico
         energy=energy_dist,              # Espectro de energia para Co-60
-        strength=3.7e7,                   # Intensidade da fonte (1 mCi ou 0,7mCi?)
+        strength=3.7e7,                  # Intensidade da fonte
         particle='photon'
     )
 
-    filtro_energia_exemplo = openmc.EnergyFilter([1,2])
+    # distribuição de fonte de raios cósmicos (1 m² 15.65 cm acima do detector)
+    x_dist_rc = openmc.stats.Uniform(-50.0, 50.0)
+    y_dist_rc = openmc.stats.Uniform(-50.0, 50.0)
+    z_dist_rc =  openmc.stats.Uniform(70.0, 70.0)
+    space_rc = openmc.stats.CartesianIndependent(x=x_dist_rc, y=y_dist_rc, z=z_dist_rc)
+    # espectro de energia de raios cósmicos (falta corrigir de acordo com expacs)
+    espectro_rc = openmc.stats.Discrete([1.0e6], [1.0])
+
+    raios_c = openmc.IndependentSource(
+        space = space_rc,
+        angle = openmc.stats.Monodirectional((0,0,-1)),
+        energy = espectro_rc,
+        strength = 3.7e9,               # corrigir intensidade da fonte de acordo com expacs
+        particle = 'photon'
+    )
+
+    filtro_energia_exemplo = openmc.EnergyFilter([1,2])   # descobrir o que isso faz e como usar o pulse height tally
     particle_foton = openmc.ParticleFilter(bins='photon')
 
     tally_flux = openmc.Tally(name='Fluxo de fótons chegando ao cristal')
@@ -412,19 +403,6 @@ print('Fluxos: ', lista_fluxos)
     # MatPlotLib
     # ======================
 
-
-# PLT styles
-
-# ['Solarize_Light2', '_classic_test_patch', '_mpl-gallery', '_mpl-gallery-nogrid', 'bmh', 'classic', 'dark_background', 'fast', 'fivethirtyeight', 
-# 'ggplot', 'grayscale', 'seaborn-v0_8', 'seaborn-v0_8-bright', 'seaborn-v0_8-colorblind', 'seaborn-v0_8-dark', 'seaborn-v0_8-dark-palette', 
-# 'seaborn-v0_8-darkgrid', 'seaborn-v0_8-deep', 'seaborn-v0_8-muted', 'seaborn-v0_8-notebook', 'seaborn-v0_8-paper', 'seaborn-v0_8-pastel', 
-# 'seaborn-v0_8-poster', 'seaborn-v0_8-talk', 'seaborn-v0_8-ticks', 'seaborn-v0_8-white', 'seaborn-v0_8-whitegrid', 'tableau-colorblind10']
-
-# Colors
-
-# xkcd color survey, prefixed with 'xkcd:' (e.g., 'xkcd:sky blue'; case insensitive) https://xkcd.com/color/rgb/
-# Tableau Colors from the 'T10' categorical palette:
-# {'tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan'}
 
 plt.style.use("seaborn-v0_8-paper")
 
