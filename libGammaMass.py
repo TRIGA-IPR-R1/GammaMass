@@ -216,8 +216,8 @@ class Detector:
         tarugo_altura      = 10,
         
         # Parâmetros do colimador
-        colimador_espessura = 0,
-        colimador_abertura  = 7.8,#Diametro do detector
+        colimador_espessura = 2.7, #Espessura nominal do colimador LB-4700
+        colimador_abertura  = 7.8,  #Diametro do detector
         colimador_impureza  = 0,
         
         # Parãmetros das fontes
@@ -320,7 +320,7 @@ class Detector:
         ## Posição: 0,0,10.45
         ## Tamanho: Fixo em XYZ
         
-        esteira_espessura        = 0.1
+        esteira_espessura       = 0.1
         esteira_altura_sup      = 10.45 #esteira_altura_sup será reaproveitado posteriormente, por isso não está centralizada como as outras
         esteira_altura_inf      = esteira_altura_sup - esteira_espessura
         esteira_largura         = 50
@@ -562,7 +562,8 @@ class Detector:
             strength = fonte_raiosCosmicos_intensidade,
             particle = 'photon'
         )
-    
+
+        #Desativando raios cósmicos até melhorar a função
         #self.fontes.append(fonte_raiosCosmicos)
 
 
