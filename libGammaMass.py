@@ -75,7 +75,6 @@ class Detector:
             particulas=1000,
             ciclos=100
             ):
-        print()
         
         # Criando xml padrão de materiais, geometria e configurações
         self.materiais()
@@ -218,8 +217,8 @@ class Detector:
         
         # Parâmetros do colimador
         colimador_espessura = 0,
-        colimador_abertura = 7.8,#Diametro do detector
-        colimador_impureza = 0,
+        colimador_abertura  = 7.8,#Diametro do detector
+        colimador_impureza  = 0,
         
         # Parãmetros das fontes
         fonte_cobalto_intensidade    = 3.7e7,
@@ -708,12 +707,20 @@ class Detector:
         if export:
             self.Tallies.export_to_xml()
 
-    def tallies_fluxo(self, get=False, file=None):
+    def tallies_fluxo_detector(
+            self,
+            get     =   False,
+            file    =   None,
+            energia =   None,
+            nome    =  "flux"
+            ):
+        
         if not get:
-            tally_flux = openmc.Tally(name='Fluxo de fótons chegando ao cristal')
+            tally_flux = openmc.Tally(name=nome)
             tally_flux.filters.append(openmc.ParticleFilter(bins='photon'))
             tally_flux.filters.append(openmc.CellFilter(self.detector_cell))
-            tally_flux.filters.append(openmc.EnergyFilter([1.1e6, 1.4e6]))
+            if energia != None:
+                tally_flux.filters.append(openmc.EnergyFilter(energia))
             tally_flux.scores.append('flux')
             self.Tallies.append(tally_flux)
             
@@ -726,7 +733,7 @@ class Detector:
             else:
                 sp = openmc.StatePoint(file)
             
-            flux = sp.get_tally(scores=['flux'], name='Fluxo de fótons chegando ao cristal')
+            flux = sp.get_tally(scores=['flux'], name=nome)
             flux_mean = float(flux.mean[0][0][0])
             flux_std_dev = float(flux.std_dev[0][0][0])
             

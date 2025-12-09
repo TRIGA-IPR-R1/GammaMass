@@ -22,10 +22,10 @@ os.system("clear") #Limpa tela
 
 # --- Seção responsável por executar o experimento ---
 
-import libDetector
+import libGammaMass
 
 # Cria pasta com data no nome para armazenar os resultados
-libDetector.mkdir("resultados", data=True)
+libGammaMass.mkdir("resultados", data=True)
 
 #Configurações da simulação
 config = [100000, 200] #Particulas, ciclos totais
@@ -40,15 +40,17 @@ for i in range(pos_ini, pos_fin+1):
     print("################")
     print("####### ",i, " ######")
     print("################")
-    libDetector.mkdir(f"experimento.{i}", data=False, voltar=(i!=pos_ini))
+    libGammaMass.mkdir(f"simulação.{i}", data=False, voltar=(i!=pos_ini))
     
     #Criando reator no OpenMC
-    detector = libDetector.Detector(particulas=config[0], ciclos=config[1])
+    detector = libGammaMass.Detector(particulas=config[0], ciclos=config[1])
     detector.geometria(
+        tarugo_altura=20,
         tarugo_esteira_pos = i,
-        colimador_espessura = 5,
-        colimador_abertura = 0.70
+        colimador_espessura = 1,
+        colimador_abertura = 0.70,
     )
+
     detector.plotagem("plot.lateral.xy.png",  "xy")
     detector.plotagem("plot.frontal.yz.png",  "yz", rotacionar = True)
     detector.plotagem("plot.superior.xz.png", "xz", rotacionar = True, origin=(0,52.35,0))
@@ -56,7 +58,10 @@ for i in range(pos_ini, pos_fin+1):
     
     #Configurações de tallies
     detector.tallies(init=True)     #Iniciar a lista de tallies
-    detector.tallies_fluxo()        #Adicionar o tallies de fluxo a lista
+    detector.tallies_fluxo_detector(nome="qualquer energia")        #Adicionar o tallies de fluxo a lista
+    detector.tallies_fluxo_detector(energia=[1.1e6, 1.2e6], nome="energia A cobalto")        #Adicionar o tallies de fluxo a lista
+    detector.tallies_fluxo_detector(energia=[1.2e6, 1.3e6], nome="energia A~B cobalto")      #Adicionar o tallies de fluxo a lista
+    detector.tallies_fluxo_detector(energia=[1.3e6, 1.4e6], nome="energia B cobalto")        #Adicionar o tallies de fluxo a lista
     detector.tallies(export=True)   #Finalizar a lista (exportar tallies.xml)
     
     
@@ -70,7 +75,7 @@ for i in range(pos_ini, pos_fin+1):
 
 # --- Seção responsável por extrair resultados dos experimentos ---
 
-libDetector.chdir("..")
+libGammaMass.chdir("..")
 
 vetor_fluxo = [] #vetor para salvar todos os resultados
 vetor_fluxo_incerteza = [] #vetor de incertezas (na verdade é o desvio padrão (std))
@@ -78,12 +83,13 @@ vetor_fluxo_incerteza = [] #vetor de incertezas (na verdade é o desvio padrão 
 # Navegue arquivo por arquivo coletando os resultados
 for i in range(pos_ini, pos_fin+1):
     #Obtenha o fluxo dos referidos arquivos
-    fluxo, incerteza = detector.tallies_fluxo(get=True, file=f"experimento.{i}/statepoint.{config[1]}.h5")
+    fluxo1, incerteza1 =     detector.tallies_fluxo_detector(get=True,    nome="qualquer energia",       file=f"simulação.{i}/statepoint.{config[1]}.h5")
+    fluxo2, incerteza2 =     detector.tallies_fluxo_detector(get=True,    nome="energia A cobalto",      file=f"simulação.{i}/statepoint.{config[1]}.h5")
+    fluxo3, incerteza3 =     detector.tallies_fluxo_detector(get=True,    nome="energia A~B cobalto",    file=f"simulação.{i}/statepoint.{config[1]}.h5")
+    fluxo4, incerteza4 =     detector.tallies_fluxo_detector(get=True,    nome="energia B cobalto",      file=f"simulação.{i}/statepoint.{config[1]}.h5")
     #Salve eles nos vetores
-    vetor_fluxo.append(fluxo)
-    vetor_fluxo_incerteza.append(incerteza)
-
-
+    vetor_fluxo.append([fluxo1, fluxo2, fluxo3, fluxo4])
+    vetor_fluxo_incerteza.append(incerteza1, incerteza2, incerteza3, incerteza4)
 
 
 
