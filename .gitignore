@@ -3,6 +3,8 @@
 *.h5
 *.png
 *.ppm
+resultado*
+
 #Gerados pelo github para python
 # Byte-compiled / optimized / DLL files
 __pycache__/
