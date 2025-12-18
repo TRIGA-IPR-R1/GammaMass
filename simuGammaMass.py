@@ -28,7 +28,7 @@ import libGammaMass
 libGammaMass.mkdir("resultados", data=True)
 
 #Configurações da simulação
-config = [140000, 100] #Particulas, ciclos totais
+config = [40000, 100] #Particulas, ciclos totais
 
 
 #Simular todos os casos usando matriz_real para alterar parâmetros da simulação
@@ -93,9 +93,9 @@ for i in range(area_ini, area_fin+1, passo):
     #fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="qualquer energia",         file=f"simulação.{i}/statepoint.{config[1]}.h5")
     #fluxos.append(fluxo)
     #incertezas.append(incerteza)
-    #fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="tudo abaixo cobalto",      file=f"simulação.{i}/statepoint.{config[1]}.h5")
-    #fluxos.append(fluxo)
-    #incertezas.append(incerteza)
+    fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="tudo abaixo cobalto",      file=f"simulação.{i}/statepoint.{config[1]}.h5")
+    fluxos.append(fluxo)
+    incertezas.append(incerteza)
     #fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="energia abaixo A cobalto", file=f"simulação.{i}/statepoint.{config[1]}.h5")
     #fluxos.append(fluxo)
     #incertezas.append(incerteza)
