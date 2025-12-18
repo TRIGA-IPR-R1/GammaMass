@@ -675,7 +675,7 @@ class Detector:
             particle = 'photon'
         )
 
-        self.fontes.append(fonte_Concreto)
+        #self.fontes.append(fonte_Concreto)
 
         
 
@@ -739,8 +739,8 @@ class Detector:
             self,
             filename = 'plot.png',
             basis = 'yz',
-            width = (300 , 100),
-            pixels = (2000, 1000),
+            width = (200 , 100),
+            pixels = (800, 800),
             origin = None,
             rotacionar = False
             ):
