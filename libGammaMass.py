@@ -181,12 +181,12 @@ class Detector:
         self.m_pb.add_nuclide('Pb207', 0.221)
         self.m_pb.add_nuclide('Pb206', 0.241)
         self.m_pb.add_nuclide('Pb204', 0.014)
-        #self.m_pb.set_density('g/cm3', 11.34)
+        self.m_pb.set_density('g/cm3', 11.34)
         materials.append(self.m_pb)
         self.colors[self.m_pb] = (45, 79, 56)
 
 
-        # Material 9 - Concreto
+        # Material 9 - Concreto (cimento Portland comum)
         cao = openmc.Material()
         cao.add_elements_from_formula('CaO')
         sio = openmc.Material()
@@ -214,7 +214,6 @@ class Detector:
         self.m_concreto.set_density('g/cm3', 2.4)
         materials.append(self.m_concreto)
         self.colors[self.m_concreto] = (230, 162, 131)
-        # cimento portland comum
 
         # Criação do conjunto de materiais
         materials.export_to_xml()
@@ -253,7 +252,7 @@ class Detector:
         colimador_impureza  = 0,
         
         # Parãmetros das fontes
-        fonte_cobalto_intensidade    = 3.7e7,
+        fonte_cobalto_intensidade    = 7.4e7, ########### Atividade de 3.7e7 x2 pois são 2 fótons
         fonte_raiosCosmicos_mes      = 1,
         fonte_raiosCosmicos_latitude = 0,
         
@@ -648,7 +647,7 @@ class Detector:
             particle = 'photon'
         )
 
-        #self.fontes.append(fonte_raiosCosmicos)
+        self.fontes.append(fonte_raiosCosmicos)
 
 
     ###############################################
