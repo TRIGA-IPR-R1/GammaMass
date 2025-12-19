@@ -59,13 +59,13 @@ for area in range(area_ini, area_fin+1, passo):
         
     #Configurações de tallies
     detector.tallies(init=True)     #Iniciar a lista de tallies
-    #detector.tallies_fluxo_detector(                        nome="qualquer energia")         #1
-    detector.tallies_fluxo_detector(energia=[1,     1.1e6], nome="tudo abaixo cobalto")       #2
+    detector.tallies_fluxo_detector(                        nome="qualquer energia")         #1
+    #detector.tallies_fluxo_detector(energia=[1,     1.1e6], nome="tudo abaixo cobalto")       #2
     #detector.tallies_fluxo_detector(energia=[1.0e6, 1.1e6], nome="energia abaixo A cobalto") #3
     #detector.tallies_fluxo_detector(energia=[1.1e6, 1.2e6], nome="energia A cobalto")        #4
     #detector.tallies_fluxo_detector(energia=[1.2e6, 1.3e6], nome="energia A~B cobalto")      #5
     #detector.tallies_fluxo_detector(energia=[1.3e6, 1.4e6], nome="energia B cobalto")        #6
-    detector.tallies_fluxo_detector(energia=[1.1e6, 1.47e6], nome="energias cobalto")          #7
+    detector.tallies_fluxo_detector(energia=[1.1e6, 1.34e6], nome="energias cobalto")          #7
     detector.tallies(export=True)   #Finalizar a lista (exportar tallies.xml)
 
 
@@ -90,12 +90,12 @@ for i in range(area_ini, area_fin+1, passo):
     fluxos = []
     incertezas = []
 
-    #fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="qualquer energia",         file=f"simulação.{i}/statepoint.{config[1]}.h5")
-    #fluxos.append(fluxo)
-    #incertezas.append(incerteza)
-    fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="tudo abaixo cobalto",      file=f"simulação.{i}/statepoint.{config[1]}.h5")
+    fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="qualquer energia",         file=f"simulação.{i}/statepoint.{config[1]}.h5")
     fluxos.append(fluxo)
     incertezas.append(incerteza)
+    # fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="tudo abaixo cobalto",      file=f"simulação.{i}/statepoint.{config[1]}.h5")
+    # fluxos.append(fluxo)
+    # incertezas.append(incerteza)
     #fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="energia abaixo A cobalto", file=f"simulação.{i}/statepoint.{config[1]}.h5")
     #fluxos.append(fluxo)
     #incertezas.append(incerteza)
@@ -126,7 +126,7 @@ for i in range(area_ini, area_fin+1, passo):
 # --- Seção responsável por salvar entradas e saídas de todos experimentos ---
 
 from pprint import pprint
-with open("resultados_experimentos.py", "w") as f:
+with open("resultados_experimentos.py", "w") as f:  #### mudar nome para separar os casos
     f.write("# Resultados da Simulação OpenMC\n")
     f.write("# Arquivo gerado automaticamente\n\n")
     
