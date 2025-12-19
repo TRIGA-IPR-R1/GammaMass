@@ -327,7 +327,37 @@ class Detector:
         
         
         
-        
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+
+        print("|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|")
+        print("|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|")
+        print("|--|--|--|--|--|                    fonte_cobalto_intensidade = ", fonte_cobalto_intensidade)
+        print("|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|")
+        print("|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|")
+
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+
         ### Definição da "distribuição" da origem e características dos raios gama da fonte    
         fonte_cobalto = openmc.IndependentSource(
             space       =   openmc.stats.CylindricalIndependent(
@@ -342,7 +372,8 @@ class Detector:
         )
         
         ##### Adicionar a lista de fontes em self
-        self.fontes.append(fonte_cobalto)
+        if not fonte_cobalto_intensidade==0:
+            self.fontes.append(fonte_cobalto)
 
     
     
@@ -668,7 +699,7 @@ class Detector:
             particle = 'photon'
         )
 
-        if not fonte_raiosCosmicos_intensidade==None:
+        if not fonte_raiosCosmicos_intensidade==0:
             self.fontes.append(fonte_raiosCosmicos)
 
 
@@ -696,7 +727,7 @@ class Detector:
             particle = 'photon'
         )
 
-        if not fonte_Concreto_intensidade==None:
+        if not fonte_Concreto_intensidade==0:
             self.fontes.append(fonte_Concreto)
 
         
@@ -825,12 +856,12 @@ class Detector:
         if export:
             self.Tallies.export_to_xml()
 
-    def tallies_fluxo_detector(
+    def tallies_fluxo_pulso_detector(
             self,
             get     =   False,
             file    =   None,
             energia =   None,
-            nome    =  "flux"
+            nome    =  "flux_pulse"
             ):
         
         if not get:
@@ -840,6 +871,7 @@ class Detector:
             if energia != None:
                 tally_flux.filters.append(openmc.EnergyFilter(energia))
             tally_flux.scores.append('flux')
+            tally_flux.scores.append('pulse-height')
             self.Tallies.append(tally_flux)
             
         else:
@@ -854,8 +886,12 @@ class Detector:
             flux = sp.get_tally(scores=['flux'], name=nome)
             flux_mean = float(flux.mean[0][0][0])
             flux_std_dev = float(flux.std_dev[0][0][0])
+
+            pulse = sp.get_tally(scores=['pulse-height'], name=nome)
+            pulse_mean = float(flux.mean[0][0][0])
+            pulse_std_dev = float(flux.std_dev[0][0][0])
             
             #print(flux.mean)
             sp.close()
             
-            return flux_mean, flux_std_dev
+            return flux_mean, flux_std_dev, pulse_mean, pulse_std_dev
