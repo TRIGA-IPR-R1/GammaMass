@@ -856,23 +856,22 @@ class Detector:
         if export:
             self.Tallies.export_to_xml()
 
-    def tallies_fluxo_pulso_detector(
+    def tallies_detector(
             self,
             get     =   False,
             file    =   None,
             energia =   None,
-            nome    =  "flux_pulse"
+            nome    =  "fluxo",
+            score   =  "flux"
             ):
         
         if not get:
-            tally_flux = openmc.Tally(name=nome)
-            tally_flux.filters.append(openmc.ParticleFilter(bins='photon'))
-            tally_flux.filters.append(openmc.CellFilter(self.detector_cell))
+            tally = openmc.Tally(name=nome)
+            tally.filters.append(openmc.CellFilter(self.detector_cell))
             if energia != None:
-                tally_flux.filters.append(openmc.EnergyFilter(energia))
-            tally_flux.scores.append('flux')
-            tally_flux.scores.append('pulse-height')
-            self.Tallies.append(tally_flux)
+                tally.filters.append(openmc.EnergyFilter(energia))
+            tally.scores.append(score)
+            self.Tallies.append(tally)
             
         else:
             # ======================
@@ -883,15 +882,12 @@ class Detector:
             else:
                 sp = openmc.StatePoint(file)
             
-            flux = sp.get_tally(scores=['flux'], name=nome)
-            flux_mean = float(flux.mean[0][0][0])
-            flux_std_dev = float(flux.std_dev[0][0][0])
+            value            = sp.get_tally(scores=[score], name=nome)
+            value_mean       = [float(elemento[0][0]) for elemento in value.mean]
+            value_std_dev    = [float(elemento[0][0]) for elemento in value.std_dev]
 
-            pulse = sp.get_tally(scores=['pulse-height'], name=nome)
-            pulse_mean = float(flux.mean[0][0][0])
-            pulse_std_dev = float(flux.std_dev[0][0][0])
-            
-            #print(flux.mean)
             sp.close()
             
-            return flux_mean, flux_std_dev, pulse_mean, pulse_std_dev
+            return value_mean, value_std_dev
+        
+        

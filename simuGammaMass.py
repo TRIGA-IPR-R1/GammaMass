@@ -68,17 +68,12 @@ def simuVariaArea(fonte_cobalto_intensidade=7.4e6,colimador_espessura = 2.7,volt
         #detector.plotagem("plot.superior.xz.png", "xz", rotacionar = True, origin=(0,52.35,0))
 
 
-        nomes_tallies = [
-            "tudo abaixo cobalto",
-            "energias cobalto",
-            "tudo acima cobalto"
-        ]
+        intervalos_energias=np.linspace(5e3,2e6,2**10).tolist() # Intervalo de 5KeV a 2MeV dividido em 2¹⁰ canais
+        
         #Configurações de tallies
         detector.tallies(init=True)     #Iniciar a lista de tallies
-        #detector.tallies_fluxo_detector(                        nome="qualquer energia")        #
-        detector.tallies_fluxo_detector(energia=[1,     1.1e6], nome=nomes_tallies[0])           #1
-        detector.tallies_fluxo_detector(energia=[1.1e6, 1.34e6], nome=nomes_tallies[1])          #2
-        detector.tallies_fluxo_detector(energia=[1.34e6,  9E10], nome=nomes_tallies[2])          #3
+        detector.tallies_detector(energia=intervalos_energias, score="flux",         nome="espectroFluxo")           #1
+        detector.tallies_detector(energia=intervalos_energias, score="pulse-height", nome="espectroPulso")           #2
         detector.tallies(export=True)   #Finalizar a lista (exportar tallies.xml)
 
 
@@ -100,36 +95,14 @@ def simuVariaArea(fonte_cobalto_intensidade=7.4e6,colimador_espessura = 2.7,volt
         vetor_pulso_incerteza = [] #vetor de incertezas (na verdade é o desvio padrão (std))
         # Navegue arquivo por arquivo coletando os resultados
         for i in range(area_ini, area_fin+1, passo):
-            #Obtenha o fluxo dos referidos arquivos
-            fluxos = []
-            incertezas_f = []
-            pulsos = []
-            incertezas_p = []
-
-            #fluxo, incerteza =     detector.tallies_fluxo_detector(get=True,    nome="qualquer energia",         file=f"simulação.{i}/statepoint.{config[1]}.h5")
-            #fluxos.append(fluxo)
-            #incertezas.append(incerteza)
-            fluxo, incerteza_f, pulso, incerteza_p =     detector.tallies_fluxo_detector(get=True,    nome=nomes_tallies[0],      file=f"simulação.{i}/statepoint.{config[1]}.h5")
-            fluxos.append(fluxo)
-            incertezas_f.append(incerteza_f)
-            pulsos.append(pulso)
-            incertezas_p.append(incerteza_p)
-            fluxo, incerteza_f, pulso, incerteza_p =     detector.tallies_fluxo_detector(get=True,    nome=nomes_tallies[1],          file=f"simulação.{i}/statepoint.{config[1]}.h5")
-            fluxos.append(fluxo)
-            incertezas_f.append(incerteza_f)
-            pulsos.append(pulso)
-            incertezas_p.append(incerteza_p)
-            fluxo, incerteza_f, pulso, incerteza_p =     detector.tallies_fluxo_detector(get=True,    nome=nomes_tallies[2],        file=f"simulação.{i}/statepoint.{config[1]}.h5")
-            fluxos.append(fluxo)
-            incertezas_f.append(incerteza_f)
-            pulsos.append(pulso)
-            incertezas_p.append(incerteza_p)
+            fluxo, incerteza_f =     detector.tallies_detector(get=True,    nome="espectroFluxo", score="flux",          file=f"simulação.{i}/statepoint.{config[1]}.h5")
+            pulso, incerteza_p =     detector.tallies_detector(get=True,    nome="espectroPulso", score="pulse-height",  file=f"simulação.{i}/statepoint.{config[1]}.h5")
             
             #Salve eles nos vetores
-            vetor_fluxo.append(fluxos)
-            vetor_fluxo_incerteza.append(incertezas_f)
-            vetor_pulso.append(pulsos)
-            vetor_pulso_incerteza.append(incertezas_p)
+            vetor_fluxo.append(fluxo)
+            vetor_fluxo_incerteza.append(incerteza_f)
+            vetor_pulso.append(pulso)
+            vetor_pulso_incerteza.append(incerteza_p)
 
 
 
@@ -156,6 +129,10 @@ def simuVariaArea(fonte_cobalto_intensidade=7.4e6,colimador_espessura = 2.7,volt
             pprint(fonte_cobalto_intensidade, stream=f)
             f.write("\n")
 
+            f.write("intervalos_energias = ")
+            pprint(intervalos_energias, stream=f)
+            f.write("\n")
+
             f.write("vetor_area = ")
             pprint(vetor_area, stream=f)
             f.write("\n")
@@ -174,10 +151,6 @@ def simuVariaArea(fonte_cobalto_intensidade=7.4e6,colimador_espessura = 2.7,volt
             
             f.write("vetor_pulso_incerteza = ")
             pprint(vetor_pulso_incerteza, stream=f)
-            f.write("\n")
-
-            f.write("nomes_tallies = ")
-            pprint(nomes_tallies, stream=f)
             f.write("\n")
 
 
