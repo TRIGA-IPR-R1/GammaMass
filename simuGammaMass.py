@@ -27,22 +27,54 @@ libGammaMass.simu = True
 libGammaMass.plotar = False
 
 
-def simuVariaArea(fonte_cobalto_intensidade=7.4e6,colimador_espessura = 2.7,voltar=True):
+def simuVariaArea(
+        # Controle de pastas, para se deve voltar uma pasta acima antes de criar
+        voltar=True,
+        
+        # Configurações da simulação
+        particulas = 100000,
+        ciclos     = 100,
+
+        # Configurações de variação de área
+        area_ini = 0,
+        area_fin = 625, #25x25
+        passo    = 25,
+
+        # Configurações de geometria e fonte
+        ## Parâmetros do tarugo
+        tarugo_esteira_pos = 0, #centralizado em cima da fonte
+        tarugo_comprimento = 10,
+        #Gerados automaticamente:
+        #tarugo_largura     = 10,
+        #tarugo_altura      = 10,
+        
+        ## Parâmetros do colimador
+        colimador_espessura = 2.7, #Espessura nominal do colimador LB-4700
+        colimador_abertura  = 7.8, #Diametro do detector
+        colimador_impureza  = 0,
+        
+        ## Parãmetros das fontes
+        fonte_cobalto_intensidade    = 7.4e6, ########### Atividade de 3.7e7 x2 pois são 2 fótons
+        fonte_raiosCosmicos_mes      = 1,
+        fonte_raiosCosmicos_latitude = 0,
+        
+        ## Parametros do detector
+        detectores_numero           = 1,
+        detectores_altura_meio      = 52.35,
+        detectores_altura_esquerda  = 52.35,
+        detectores_altura_direita   = 52.35,
+
+        ##Parametros concreto
+        fonte_Concreto_intensidade = 1.59e4           ### multiplicado por 1,57 área da semi-esfera
+        ):
     # Cria pasta com data no nome para armazenar os resultados
     libGammaMass.mkdir("resultados_"+str(int(fonte_cobalto_intensidade))+"_"+str(int(colimador_espessura*10)), data=False, voltar=voltar)
 
     #Configurações da simulação
-    config = [20000, 100] #Particulas, ciclos totais
+    config = [particulas, ciclos] #Particulas, ciclos totais
 
 
-    #Simular todos os casos usando matriz_real para alterar parâmetros da simulação
-    #for i in range(0, len(matriz_real)):
-
-    area_ini = 0
-    area_fin = 625 #25x25
-    passo    = 25
     vetor_area = []
-
     for area in range(area_ini, area_fin+1, passo):
         libGammaMass.mkdir(f"simulação.{area}", data=False, voltar=(area!=area_ini))
 
@@ -55,11 +87,23 @@ def simuVariaArea(fonte_cobalto_intensidade=7.4e6,colimador_espessura = 2.7,volt
         vetor_area.append(area)
         detector = libGammaMass.Detector(particulas=config[0], ciclos=config[1])
         detector.geometria(
-            tarugo_altura  = np.sqrt(area),
-            tarugo_largura = np.sqrt(area),
+            # Valores gerados de acordo com os parâmetros passados como parâmetros
+            tarugo_largura               = np.sqrt(area),
+            tarugo_altura                = np.sqrt(area),
+            # Repassar valores dos parâmetros
+            tarugo_esteira_pos           = tarugo_esteira_pos,
+            tarugo_comprimento           = tarugo_comprimento,
+            colimador_espessura          = colimador_espessura,
+            colimador_abertura           = colimador_abertura,
+            colimador_impureza           = colimador_impureza,
             fonte_cobalto_intensidade    = fonte_cobalto_intensidade,
-            colimador_espessura= colimador_espessura,
-            fonte_Concreto_intensidade = 0
+            fonte_raiosCosmicos_mes      = fonte_raiosCosmicos_mes,
+            fonte_raiosCosmicos_latitude = fonte_raiosCosmicos_latitude,
+            fonte_Concreto_intensidade   = fonte_Concreto_intensidade,
+            detectores_numero            = detectores_numero,
+            detectores_altura_meio       = detectores_altura_meio,
+            detectores_altura_esquerda   = detectores_altura_esquerda,
+            detectores_altura_direita    = detectores_altura_direita
         )
         detector.configurações(particulas=config[0], ciclos=config[1])
 
@@ -113,42 +157,51 @@ def simuVariaArea(fonte_cobalto_intensidade=7.4e6,colimador_espessura = 2.7,volt
         # --- Seção responsável por salvar entradas e saídas de todos experimentos ---
 
         from pprint import pprint
-        with open("resultados_experimentos.py", "w") as f:  #### mudar nome para separar os casos
-            f.write("# Resultados da Simulação OpenMC\n")
+        with open("resultados_simuVariaArea.py", "w") as f:  #### mudar nome para separar os casos
+            f.write("# Resultados da Simulação OpenMC - Função simuVariaArea\n")
             f.write("# Arquivo gerado automaticamente\n\n")
             
+            f.write("# Configurações de simulação: [ Particulas , Ciclos totais ]\n")
             f.write("config = ")
             pprint(config, stream=f)
             f.write("\n")
 
+            f.write("# Espessura da blindagem de chumbo (colimador). A variável colimador_abertura que regula o ângulo de visão.\n")
             f.write("colimador_espessura = ")
             pprint(colimador_espessura, stream=f)
             f.write("\n")
 
+            f.write("# Intensidade relativa da fonte de cobalto\n")
             f.write("fonte_cobalto_intensidade = ")
             pprint(fonte_cobalto_intensidade, stream=f)
             f.write("\n")
 
+            f.write("# Intervalos de energias que são divididos os tallies de fluxo e altura de pulso\n")
             f.write("intervalos_energias = ")
             pprint(intervalos_energias, stream=f)
             f.write("\n")
 
+            f.write("# Vetor contendo cada área simulada\n")
             f.write("vetor_area = ")
             pprint(vetor_area, stream=f)
             f.write("\n")
 
+            f.write("# Vetor contendo o espectro de fluxo para cada área simulada\n")
             f.write("vetor_fluxo = ")
             pprint(vetor_fluxo, stream=f)
             f.write("\n")
             
+            f.write("# Vetor contendo o espectro de incerteza do fluxo para cada área simulada\n")
             f.write("vetor_fluxo_incerteza = ")
             pprint(vetor_fluxo_incerteza, stream=f)
             f.write("\n")
 
+            f.write("# Vetor contendo o espectro de pulso para cada área simulada\n")
             f.write("vetor_pulso = ")
             pprint(vetor_pulso, stream=f)
             f.write("\n")
             
+            f.write("# Vetor contendo o espectro de incerteza do pulso para cada área simulada\n")
             f.write("vetor_pulso_incerteza = ")
             pprint(vetor_pulso_incerteza, stream=f)
             f.write("\n")
