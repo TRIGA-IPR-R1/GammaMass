@@ -263,7 +263,7 @@ class Detector:
         detectores_altura_direita   = 52.35,
 
         #Parametros concreto
-        fonte_Concreto_intensidade = 1.59e4           ### multiplicado por 1,57 área da semi-esfera
+        fonte_Concreto_intensidade = 1.0058e5           ### 10 m² de chão concreto
 
         ):
         
@@ -440,23 +440,23 @@ class Detector:
         ## Posição: 100 cm abaixo da fonte de Co-60
         ## Tamanho: 1m²
         
-        concreto_comprimento = 100
-        concreto_altura = -100
+        # concreto_comprimento = 100
+        # concreto_altura = -100
 
-        ### Definição de geometria do material da fonte
+        # ### Definição de geometria do material da fonte
 
-        plane_y_max_concreto = openmc.YPlane(   y0 =  concreto_altura)
-        plane_y_min_concreto = openmc.YPlane(   y0 = concreto_altura -10)
-        plane_x_min_concreto = openmc.XPlane(   x0 = -concreto_comprimento/2)
-        plane_x_max_concreto = openmc.XPlane(   x0 =  concreto_comprimento/2)
-        plane_z_min_concreto = openmc.ZPlane(   z0 = -concreto_comprimento/2)
-        plane_z_max_concreto = openmc.ZPlane(   z0 =  concreto_comprimento/2)
+        # plane_y_max_concreto = openmc.YPlane(   y0 =  concreto_altura)
+        # plane_y_min_concreto = openmc.YPlane(   y0 = concreto_altura -10)
+        # plane_x_min_concreto = openmc.XPlane(   x0 = -concreto_comprimento/2)
+        # plane_x_max_concreto = openmc.XPlane(   x0 =  concreto_comprimento/2)
+        # plane_z_min_concreto = openmc.ZPlane(   z0 = -concreto_comprimento/2)
+        # plane_z_max_concreto = openmc.ZPlane(   z0 =  concreto_comprimento/2)
 
-        concreto_cell = openmc.Cell(name='Bloco de Concreto')
-        concreto_cell.region = +plane_x_min_concreto & -plane_x_max_concreto & +plane_z_min_concreto & -plane_z_max_concreto & +plane_y_min_concreto & -plane_y_max_concreto
-        concreto_cell.fill = self.m_concreto
+        # concreto_cell = openmc.Cell(name='Bloco de Concreto')
+        # concreto_cell.region = +plane_x_min_concreto & -plane_x_max_concreto & +plane_z_min_concreto & -plane_z_max_concreto & +plane_y_min_concreto & -plane_y_max_concreto
+        # concreto_cell.fill = self.m_concreto
         
-        universe_1.add_cell(concreto_cell)
+        # universe_1.add_cell(concreto_cell)
         
         
     ###############################################
@@ -585,16 +585,16 @@ class Detector:
         ## Formato: Paralelepipedo
         ## Tamanho: 
         
-        plane_x_max_vazio = openmc.XPlane(x0=  120, boundary_type='vacuum')
-        plane_x_min_vazio = openmc.XPlane(x0= -120, boundary_type='vacuum')
-        plane_y_max_vazio = openmc.YPlane(y0=  150,  boundary_type='vacuum')
-        plane_y_min_vazio = openmc.YPlane(y0= -150,  boundary_type='vacuum')
-        plane_z_max_vazio = openmc.ZPlane(z0=  120, boundary_type='vacuum')
-        plane_z_min_vazio = openmc.ZPlane(z0= -120, boundary_type='vacuum')
+        plane_x_max_vazio = openmc.XPlane(x0=  200, boundary_type='vacuum')
+        plane_x_min_vazio = openmc.XPlane(x0= -200, boundary_type='vacuum')
+        plane_y_max_vazio = openmc.YPlane(y0=  200, boundary_type='vacuum')
+        plane_y_min_vazio = openmc.YPlane(y0= -200, boundary_type='vacuum')
+        plane_z_max_vazio = openmc.ZPlane(z0=  200, boundary_type='vacuum')
+        plane_z_min_vazio = openmc.ZPlane(z0= -200, boundary_type='vacuum')
 
         box = (-plane_y_max_vazio & +plane_y_min_vazio & -plane_x_max_vazio & +plane_x_min_vazio & -plane_z_max_vazio & +plane_z_min_vazio)
         inner = (self.detector_cell.region | tarugo_cell.region | fonte_cell.region | esteira_cell.region | janela_cell.region 
-                 | colimador_cell.region | clamping_cell.region | disco_cell.region | concreto_cell.region)
+                 | colimador_cell.region | clamping_cell.region | disco_cell.region)
     
         ar_region = ar_region = box & ~inner
 
@@ -647,8 +647,6 @@ class Detector:
     1.13E6, 1.42E6, 1.79E6, 2.25E6, 2.84E6, 3.57E6, 4.50E6, 5.66E6, 7.13E6, 8.97E6,
     1.13E7, 1.42E7, 1.79E7, 2.25E7, 2.84E7, 3.57E7, 4.50E7, 5.66E7, 7.13E7, 8.97E7,
     1.13E8, 1.42E8, 1.79E8, 2.25E8, 2.84E8, 3.57E8, 4.50E8, 5.66E8, 7.13E8, 8.97E8,
-    #1.13E9, 1.42E9, 1.79E9, #2.25E9, 2.84E9, 3.57E9, 4.50E9, #5.66E9, 7.13E9, 8.97E9,
-    
     ]
 # ------------------------------
 # Frações normalizadas
@@ -659,46 +657,42 @@ class Detector:
     1.52E-03, 1.12E-03, 8.41E-04, 6.39E-04, 4.90E-04, 3.79E-04, 2.95E-04, 2.30E-04, 1.79E-04, 1.38E-04,
     1.06E-04, 7.95E-05, 5.87E-05, 4.22E-05, 2.96E-05, 2.01E-05, 1.32E-05, 8.47E-06, 5.29E-06, 3.24E-06,
     1.95E-06, 1.16E-06, 6.83E-07, 3.99E-07, 2.32E-07, 1.35E-07, 7.77E-08, 4.48E-08, 2.58E-08, 1.49E-08,
-    #8.55E-09, 4.92E-09, 2.83E-09, #1.62E-09, 9.33E-10, 5.36E-10, 3.08E-10, #1.77E-10, 1.02E-10, 5.84E-11,
     ]
         
-#         energias = [
-#     1.13E4, 1.42E4, 1.79E4, 2.25E4, 2.84E4, 3.57E4, 4.50E4, 5.66E4, 7.13E4, 8.97E4,
-#     1.13E5, 1.42E5, 1.79E5, 2.25E5, 2.84E5, 3.57E5, 4.50E5, 5.66E5, 7.13E5, 8.97E5,
-#     1.13E6, 1.42E6, 1.79E6, 2.25E6, 2.84E6, 3.57E6, 4.50E6, 5.66E6, 7.13E6, 8.97E6,
-#     1.13E7, 1.42E7, 1.79E7, 2.25E7, 2.84E7, 3.57E7, 4.50E7, 5.66E7, 7.13E7, 8.97E7,
-#     1.13E8, 1.42E8, 1.79E8, 2.25E8, 2.84E8, 3.57E8, 4.50E8, 5.66E8, 7.13E8, 8.97E8,
-#     1.13E9, 1.42E9, 1.79E9, 2.25E9, 2.84E9, 3.57E9, 4.50E9, 5.66E9, 7.13E9, 8.97E9
-#     ]
 
-# # ------------------------------
-# # Frações normalizadas
-# # ------------------------------
-#         fracoes = [
-#     4.75E-04, 1.40E-03, 4.10E-03, 1.20E-02, 3.44E-02, 9.03E-02, 1.76E-01, 2.03E-01, 1.57E-01, 1.06E-01,
-#     6.91E-02, 4.50E-02, 2.94E-02, 1.94E-02, 1.29E-02, 8.73E-03, 5.96E-03, 1.32E-02, 2.91E-03, 2.09E-03,
-#     1.52E-03, 1.12E-03, 8.41E-04, 6.39E-04, 4.90E-04, 3.79E-04, 2.95E-04, 2.30E-04, 1.79E-04, 1.38E-04,
-#     1.06E-04, 7.95E-05, 5.87E-05, 4.22E-05, 2.96E-05, 2.01E-05, 1.32E-05, 8.47E-06, 5.29E-06, 3.24E-06,
-#     1.95E-06, 1.16E-06, 6.83E-07, 3.99E-07, 2.32E-07, 1.35E-07, 7.77E-08, 4.48E-08, 2.58E-08, 1.49E-08,
-#     8.55E-09, 4.92E-09, 2.83E-09, 1.62E-09, 9.33E-10, 5.36E-10, 3.08E-10, 1.77E-10, 1.02E-10, 5.84E-11
-#     ]
+
+
+        r_ext = 100.0
+        origin_y = (0.0, 0.0, 0.0)
+
+        hem_norte = openmc.stats.spherical_uniform(   # Esfera relativa aos raios cósmicos
+        r_inner = 90.0,
+        r_outer = r_ext,
+        thetas=(0.0, np.pi),
+        phis=(0.0, np.pi),
+        origin=origin_y
+        )
+
+        hem_sul = openmc.stats.spherical_uniform(   # Esfera relativa ao concreto
+        r_inner = 90.0,
+        r_outer = r_ext,
+        thetas=(0.0, np.pi),
+        phis=(0.0, -np.pi),
+        origin=origin_y
+        )
 
     # Espectro discreto
         fonte_raiosCosmicos_espectro = openmc.stats.Discrete(energias, fracoes)
-        fonte_raiosCosmicos_intensidade = 1.09e5   ### multiplicado por 1,57 área da semi-esfera
+        fonte_raiosCosmicos_intensidade = 1.09e5
+
 
         fonte_raiosCosmicos = openmc.IndependentSource(
-            space = openmc.stats.CartesianIndependent(
-                x=openmc.stats.Uniform(-50.0, 50.0),
-                y=openmc.stats.Uniform(70.0, 70.0),
-                z=openmc.stats.Uniform(-50.0, 50.0)
-                ),
+            space = hem_norte,
             angle = openmc.stats.Monodirectional((0,-1,0)),
             energy = fonte_raiosCosmicos_espectro,
             strength = fonte_raiosCosmicos_intensidade,
             particle = 'photon'
         )
-
         if not fonte_raiosCosmicos_intensidade==0:
             self.fontes.append(fonte_raiosCosmicos)
 
@@ -715,12 +709,9 @@ class Detector:
         # Espectro de energia de concreto
         fonte_Concreto_espectro = openmc.stats.Discrete([1.46e6], [1.0])
 
+
         fonte_Concreto = openmc.IndependentSource(
-            space = openmc.stats.CartesianIndependent(
-                x=openmc.stats.Uniform(-50.0, 50.0),
-                y=openmc.stats.Uniform(-110.0, -100.0),
-                z=openmc.stats.Uniform(-50.0, 50.0)
-                ),
+            space = hem_sul,
             angle = openmc.stats.Isotropic(),
             energy = fonte_Concreto_espectro,
             strength = fonte_Concreto_intensidade,
@@ -791,8 +782,8 @@ class Detector:
     def plotagem(
             self,
             filename = 'plot.png',
-            basis = 'yz',
-            width = (200 , 100),
+            basis  = 'yz',
+            width  = (200, 200),
             pixels = (800, 800),
             origin = None,
             rotacionar = False
