@@ -15,7 +15,22 @@ import os #para renomear arquivo e limpar tela
 os.system("clear") #Limpa tela
 import numpy as np
 
+# Funções para escrita em arquivo
+from pprint import pprint
 
+def escreva_comentario(arquivo, valor, nome, comentario = None):
+    # Escreva comantário e salte linha
+    arquivo.write(f"#{comentario}\n")
+
+def escreva_variaveis(arquivo, comentario = None, **kwargs):
+    # Se for passado comentário, escreva antes da variável
+    if comentario != None:
+        arquivo.write(f"#{comentario}\n")
+
+    for nome, valor in kwargs.items():
+        arquivo.write(f"{nome} = ")
+        pprint(valor, stream=arquivo)
+        arquivo.write("\n")
 
 
 
@@ -156,60 +171,26 @@ def simuVariaArea(
 
         # --- Seção responsável por salvar entradas e saídas de todos experimentos ---
 
-        from pprint import pprint
+
         with open("resultados_simuVariaArea.py", "w") as f:  #### mudar nome para separar os casos
-            f.write("# Resultados da Simulação OpenMC - Função simuVariaArea\n")
-            f.write("# Arquivo gerado automaticamente\n\n")
-            
-            f.write("# Configurações de simulação: [ Particulas , Ciclos totais ]\n")
-            f.write("config = ")
-            pprint(config, stream=f)
-            f.write("\n")
-
-            f.write("# Espessura da blindagem de chumbo (colimador). A variável colimador_abertura que regula o ângulo de visão.\n")
-            f.write("colimador_espessura = ")
-            pprint(colimador_espessura, stream=f)
-            f.write("\n")
-
-            f.write("# Intensidade relativa da fonte de cobalto\n")
-            f.write("fonte_cobalto_intensidade = ")
-            pprint(fonte_cobalto_intensidade, stream=f)
-            f.write("\n")
-
-            f.write("# Intervalos de energias que são divididos os tallies de fluxo e altura de pulso\n")
-            f.write("intervalos_energias = ")
-            pprint(intervalos_energias, stream=f)
-            f.write("\n")
-
-            f.write("# Vetor contendo cada área simulada\n")
-            f.write("vetor_area = ")
-            pprint(vetor_area, stream=f)
-            f.write("\n")
-
-            f.write("# Vetor contendo o espectro de fluxo para cada área simulada\n")
-            f.write("vetor_fluxo = ")
-            pprint(vetor_fluxo, stream=f)
-            f.write("\n")
-            
-            f.write("# Vetor contendo o espectro de incerteza do fluxo para cada área simulada\n")
-            f.write("vetor_fluxo_incerteza = ")
-            pprint(vetor_fluxo_incerteza, stream=f)
-            f.write("\n")
-
-            f.write("# Vetor contendo o espectro de pulso para cada área simulada\n")
-            f.write("vetor_pulso = ")
-            pprint(vetor_pulso, stream=f)
-            f.write("\n")
-            
-            f.write("# Vetor contendo o espectro de incerteza do pulso para cada área simulada\n")
-            f.write("vetor_pulso_incerteza = ")
-            pprint(vetor_pulso_incerteza, stream=f)
-            f.write("\n")
-
-
-
-
-
+            escreva_comentario(f," Resultados da Simulação OpenMC - Função simuVariaArea\n\n")
+            escreva_comentario(f," Arquivo gerado automaticamente\n\n")
+            escreva_variaveis(f," Configurações de simulação:", particulas=particulas,  ciclos=ciclos)
+            escreva_variaveis(f," Configurações de variação de área:", area_ini=area_ini, area_fin=area_fin, passo=passo)
+            escreva_comentario(f," Configurações de geometria e fonte:")
+            escreva_variaveis(f,"# Parâmetros do tarugo (tarugo_largura e tarugo_altura são gerados automaticamente):", tarugo_esteira_pos=tarugo_esteira_pos, tarugo_comprimento=tarugo_comprimento)
+            escreva_variaveis(f,"# Parâmetros do colimador:",  colimador_espessura=colimador_espessura, colimador_abertura=colimador_abertura, colimador_impureza=colimador_impureza)
+            escreva_variaveis(f,"# Parãmetros das fontes", fonte_cobalto_intensidade=fonte_cobalto_intensidade, fonte_raiosCosmicos_mes=fonte_raiosCosmicos_mes, fonte_raiosCosmicos_latitude=fonte_raiosCosmicos_latitude)
+            escreva_variaveis(f,"# Parametros do detector", detectores_numero=detectores_numero, detectores_altura_meio=detectores_altura_meio, detectores_altura_esquerda=detectores_altura_esquerda, detectores_altura_direita=detectores_altura_direita)
+            escreva_variaveis(f,"# Parametros concreto", fonte_Concreto_intensidade=fonte_Concreto_intensidade)
+            escreva_comentario(f," Espectro para resultados:")
+            escreva_variaveis(f," Intervalos de energias que são divididos os tallies de fluxo e altura de pulso", intervalos_energias=intervalos_energias)
+            escreva_comentario(f," Resultados:\n\n")
+            escreva_variaveis(f,"# Vetor contendo cada área simulada",vetor_area=vetor_area)
+            escreva_variaveis(f,"# Vetor contendo o espectro de fluxo para cada área simulada",vetor_fluxo=vetor_fluxo)
+            escreva_variaveis(f,"# Vetor contendo o espectro de incerteza do fluxo para cada área simulada",vetor_fluxo_incerteza=vetor_fluxo_incerteza)
+            escreva_variaveis(f,"# Vetor contendo o espectro de pulso para cada área simulada",vetor_pulso=vetor_pulso)
+            escreva_variaveis(f,"# Vetor contendo o espectro de incerteza do pulso para cada área simulada",vetor_pulso_incerteza=vetor_pulso_incerteza)
 
 
 
