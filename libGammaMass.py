@@ -205,8 +205,8 @@ class Detector:
         so.add_elements_from_formula('SO3')
 
         self.m_concreto = openmc.Material.mix_materials(
-            [cao, sio, alo, feo, mgo, ko, nao, so],
-            [0.665, 0.20, 0.05, 0.04, 0.02, 0.01, 0.005, 0.01],
+            [cao,     sio,   alo,   feo,   mgo,    ko,    nao,    so],
+            [0.665,  0.20,  0.05,  0.04,  0.02,  0.01,  0.005,  0.01],
             'wo',
             name = 'Concreto'
         )
@@ -564,6 +564,7 @@ class Detector:
 
 
         ### Definição da "distribuição" da origem e características dos raios gama das impurezas do colimador
+        #fonte_impureza_intensidade = colimador_impureza*relação
         #fonte_colimador = openmc.IndependentSource(
         #    space       =   openmc.stats.CylindricalIndependent(# Distribuição espacial (mesmo da fonte "material")  
         #                    r   = openmc.stats.Uniform(a=0,                        b=fonte_diametro),
@@ -572,7 +573,7 @@ class Detector:
         #                    ),
         #    angle       =   openmc.stats.Isotropic(),   # Ângulo isotrópico
         #    energy      =   openmc.stats.Discrete([1.1732e6, 1.3325e6], [0.5, 0.5]),                # Espectro de energia para Co-60
-        #    strength    =   fonte_cobalto_intensidade,  # Intensidade da fonte
+        #    strength    =   fonte_impureza_intensidade,  # Intensidade da fonte
         #    particle    =   'photon'
         #)
         
@@ -595,7 +596,7 @@ class Detector:
         box = (-plane_y_max_vazio & +plane_y_min_vazio & -plane_x_max_vazio & +plane_x_min_vazio & -plane_z_max_vazio & +plane_z_min_vazio)
         inner = (self.detector_cell.region | tarugo_cell.region | fonte_cell.region | esteira_cell.region | janela_cell.region 
                  | colimador_cell.region | clamping_cell.region | disco_cell.region)
-    
+
         ar_region = ar_region = box & ~inner
 
         ar_cell = openmc.Cell(name='Ar', fill=self.m_ar, region=ar_region)
