@@ -75,10 +75,9 @@ for fonte_cobalto_intensidade in [0, 7.4e1, 7.4e2, 7.4e3, 7.4e4, 7.4e5, 7.4e6, 7
 libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaComp_intensidade_especura")
 voltar = True
 for fonte_cobalto_intensidade in [0, 7.4e1, 7.4e2, 7.4e3, 7.4e4, 7.4e5, 7.4e6, 7.4e7]:
-    libVariaTarugo.simuVariaSimplesTarugo(tipoVaria="comp", ini=0, fin=1000, passo=100, area=200, fonte_cobalto_intensidade=0, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos, voltar=voltar)
-    libVariaTarugo.simuVariaSimplesTarugo(tipoVaria="comp", ini=0, fin=10000, passo=1000, area=200, fonte_cobalto_intensidade=0, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos, voltar=voltar)
-    libVariaTarugo.simuVariaSimplesTarugo(tipoVaria="comp", ini=0, fin=1000, passo=100, area=200, fonte_cobalto_intensidade=0, colimador_espessura = 0, particulas=particulas, ciclos=ciclos)
-    libVariaTarugo.simuVariaSimplesTarugo(tipoVaria="comp", ini=0, fin=10000, passo=1000, area=200, fonte_cobalto_intensidade=0, colimador_espessura = 0, particulas=particulas, ciclos=ciclos)
+    vetor_varia = [*range(0, 1001, 100), *range(2000, 10001, 1000)]
+    libVariaTarugo.simuVariaSimplesTarugo(tipoVaria="comp", ini=0, fin=0, passo=0, vetor_varia=vetor_varia, fonte_cobalto_intensidade=0, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos, voltar=voltar)
+    libVariaTarugo.simuVariaSimplesTarugo(tipoVaria="comp", ini=0, fin=0, passo=0, vetor_varia=vetor_varia, fonte_cobalto_intensidade=0, colimador_espessura = 0, particulas=particulas, ciclos=ciclos)
     voltar=False
 
 
