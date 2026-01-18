@@ -13,6 +13,7 @@
 
 import os #para renomear arquivo e limpar tela
 os.system("clear") #Limpa tela
+import sys
 import numpy as np
 
 
@@ -41,22 +42,29 @@ def escreva_variaveis(arquivo, comentario = None, **kwargs):
 
 import libGammaMass
 libGammaMass.simu = True
-libGammaMass.plotar = False
+libGammaMass.plotar = True
 
 
-def simuVariaSimplesTarugo(
+def simuVariaTarugo(
         # Configurações de variação
-        ini,
-        fin,
-        passo,
-        tipoVaria="area", #Outras opções: proporção, posição, largura, altura, comprimento
-        vetor_varia = [],
+        ini=None,
+        fin=None,
+        passo=None,
+        tipoVaria="area", #Outras opções: proporção, posição, largura, altura, comprimento, area+sequencia, area+aleatorio
+        vetor_varia = None,
         area = 100, #somente usado no caso de 'proporção'
         prop = 1, #somente usado no caso area
+        
+        # Configurações de outras variações [tarugo_esteira_pos, tarugo_comprimento, prop]
+        ## apenas para area+sequencia
+        matriz_sequencia = None, #inf linhas por 3 colunas
+        ## Apenas para area+aleatorio
+        vetor_lim_inf = [-9,   10, 0.5 ],
+        vetor_lim_sup = [ 9,  200,   2 ],
 
 
         # Controle de pastas, para se deve voltar uma pasta acima antes de criar
-        voltar=True,
+        voltar=False,
         
         # Configurações da simulação
         particulas = 100000,
@@ -92,40 +100,70 @@ def simuVariaSimplesTarugo(
     # Cria pasta com data no nome para armazenar os resultados
     libGammaMass.mkdir("resultados_"+str(int(fonte_cobalto_intensidade))+"_"+str(int(colimador_espessura*10)), data=False, voltar=voltar)
 
-    if vetor_varia:#Se vetor_veria estiver definido, ignore valores passados como parametros que são usados para gerar vetor_varia
+    if vetor_varia is not None:#Se vetor_veria estiver definido, ignore valores passados como parametros que são usados para gerar vetor_varia
         ini=None
         fin=None
         passo=None
     else:#Se vetor varia estiver vazio, gere altomaticamente conforme valores passados
-        if tipoVaria == "proporção": #Se o tipo for proporção, gere pontos simetricamente em torno de 'ini'
-            #Gera sequencia inversamente simetrica
-            ini=1 #Sempre em torno da proporção 1:1
-            sequencia_lado_direito = np.arange(ini, fin + (passo / 1000.0), passo)
-            sequencia_lado_esquerdo = np.sort(1 / sequencia_lado_direito[1:])
-            vetor_varia = np.concatenate((sequencia_lado_esquerdo, sequencia_lado_direito))
-        else: #Para os outros casos gere linearmente de ini a fin
-            vetor_varia = range(ini, fin+1, passo)
+        vetor_varia = np.arange(ini, fin + passo/1000.0, passo)
+        
+        if tipoVaria == "proporção": #Se o tipo for proporção, gere pontos simetricamente em torno de 1
+            sequencia_lado_esquerdo = np.sort(1 / vetor_varia[1:])
+            vetor_varia = np.concatenate((sequencia_lado_esquerdo, vetor_varia))
+        vetor_varia = vetor_varia.tolist()
+        
+    #Declare a variável sequência, no caso de "area+sequencia"
+    if tipoVaria == "area+sequencia":
+        sequencia = 0
+            
 
+    # Vetor para salvar o histórico de dimensões do tarugo
+    vetor_prop = []
+    vetor_area = []
+    vetor_tarugo_largura = []
+    vetor_tarugo_altura = []
+    vetor_tarugo_comprimento = []
+    vetor_tarugo_esteira_pos = []
 
-
+    
     # Realize as diversas simulações com a variação respectiva
+    voltar = False
     for varia in vetor_varia:
         # Crie uma pasta para cada variação, sem data.
-        libGammaMass.mkdir(f"simulação.{varia}", data=False, voltar=(varia!=vetor_varia[0]))#Voltar é false apenas para a primeira execução
-
+        libGammaMass.mkdir(f"simulação_{varia:.4f}", data=False, voltar=voltar)#Voltar é false apenas para a primeira execução
+        voltar = True
+        
         print("################")
         print("######## Rodando variação: ")
         print(f"####### {tipoVaria} = {varia} ")
         print("################")
 
-        # Varie a variável de acordo com o tipo de variação
+        # Gera dimensões do tarugo de acordo com o tipo de variação
         if tipoVaria == "area":
-            tarugo_largura      = np.sqrt(varia)*prop
-            tarugo_altura       = np.sqrt(varia)/prop
+            tarugo_largura      = np.sqrt(varia*prop)
+            tarugo_altura       = np.sqrt(varia/prop)
+            
+        elif tipoVaria == "area+sequencia":
+            tarugo_esteira_pos  = matriz_sequencia[sequencia][0]
+            tarugo_comprimento  = matriz_sequencia[sequencia][1]
+            prop_seq            = matriz_sequencia[sequencia][2]
+            tarugo_largura      = np.sqrt(varia*prop_seq)
+            tarugo_altura       = np.sqrt(varia/prop_seq)
+            # Controle da variável sequência: incremente 1 e reinicie caso supere o tamanho do vetor sequência
+            sequencia=sequencia+1
+            if sequencia >= len(matriz_sequencia):
+                sequencia=0
+            
+            
+        elif tipoVaria == "area+aleatorio":
+            tarugo_esteira_pos, tarugo_comprimento, prop_ale = np.random.uniform(vetor_lim_inf, vetor_lim_sup)
+            tarugo_largura      = np.sqrt(varia*prop_ale)
+            tarugo_altura       = np.sqrt(varia/prop_ale)
+
 
         elif tipoVaria == "proporção":
-            tarugo_largura  = np.sqrt(area)*varia
-            tarugo_altura   = np.sqrt(area)/varia
+            tarugo_largura  = np.sqrt(area*varia)
+            tarugo_altura   = np.sqrt(area/varia)
 
         elif tipoVaria == "posição":
             tarugo_esteira_pos           = varia
@@ -140,10 +178,21 @@ def simuVariaSimplesTarugo(
             tarugo_comprimento = varia
 
         else:
-            exit(1)
+            sys.exit(f"Erro: Tipo de variação '{tipoVaria}' desconhecido.")
 
 
-
+        # Salva histórico de dimensões do tarugo
+        vetor_tarugo_esteira_pos.append(float(tarugo_esteira_pos))
+        vetor_tarugo_comprimento.append(float(tarugo_comprimento))
+        if tipoVaria == "area+sequencia":
+            vetor_prop.append(float(prop_seq))
+        elif tipoVaria == "area+aleatorio":
+            vetor_prop.append(float(prop_ale))
+        else:
+            vetor_prop.append(float(prop))
+        vetor_tarugo_largura.append(float(tarugo_largura))
+        vetor_tarugo_altura.append(float(tarugo_altura))
+        vetor_area.append(float(tarugo_largura*tarugo_altura))
 
         # Criando reator no OpenMC
         detector = libGammaMass.Detector()
@@ -171,6 +220,7 @@ def simuVariaSimplesTarugo(
         detector.configurações(particulas=particulas, ciclos=ciclos)
 
         detector.plotagem("plot.lateral.xy.png",  "xy")
+        detector.plotagem("plot.lateralMaior.xy.png",  "xy", width  = (800, 200), pixels = (2400, 800))
         detector.plotagem("plot.frontal.yz.png",  "yz", rotacionar = True)
         #detector.plotagem("plot.superior.xz.png", "xz", rotacionar = True, origin=(0,52.35,0))
 
@@ -192,7 +242,7 @@ def simuVariaSimplesTarugo(
     # --- Seção responsável por extrair resultados dos experimentos ---
     if libGammaMass.simu == True: # Somente extraia caso tenha sido realizada as simulações
 
-        libGammaMass.chdir("..") # Saia da pasta destinada a aultima simução
+        libGammaMass.chdir("..") # Saia da pasta destinada a ultima simução
 
         # Crie os vetores para salvar todos os resultados (tallies de espectro)
         vetor_espectroFluxo     = [] #vetor para salvar todos os espectros de fluxo
@@ -201,9 +251,9 @@ def simuVariaSimplesTarugo(
         vetor_espectroPulso_STD = [] #vetor para salvar todos os desvios padrão (std)) dos espectros de pulso
         
         # Navegue arquivo por arquivo coletando os resultados
-        for i in vetor_varia:
-            espectroFluxo, espectroFluxo_STD =     detector.tallies_detector(get=True,    nome="espectroFluxo", score="flux",          file=f"simulação.{i}/statepoint.{ciclos}.h5")
-            espectroPulso, espectroPulso_STD =     detector.tallies_detector(get=True,    nome="espectroPulso", score="pulse-height",  file=f"simulação.{i}/statepoint.{ciclos}.h5")
+        for varia in vetor_varia:
+            espectroFluxo, espectroFluxo_STD =     detector.tallies_detector(get=True,    nome="espectroFluxo", score="flux",          file=f"simulação_{varia:.4f}/statepoint.{ciclos}.h5")
+            espectroPulso, espectroPulso_STD =     detector.tallies_detector(get=True,    nome="espectroPulso", score="pulse-height",  file=f"simulação_{varia:.4f}/statepoint.{ciclos}.h5")
             
             #Salve eles nos vetores
             vetor_espectroFluxo.append(espectroFluxo)
@@ -220,13 +270,13 @@ def simuVariaSimplesTarugo(
         # --- Seção responsável por salvar entradas e saídas de todos experimentos ---
 
 
-        with open("resultados_simuVariaArea.py", "w") as f:  #### mudar nome para separar os casos
-            escreva_comentario(f," Resultados da Simulação OpenMC - Função simuVariaArea\n\n")
+        with open("resultados_simuVariaTarugo.py", "w") as f:  #### mudar nome para separar os casos
+            escreva_comentario(f," Resultados da Simulação OpenMC - Função simuVariaTarugo\n\n")
             escreva_comentario(f," Arquivo gerado automaticamente\n\n")
             escreva_variaveis(f," Configurações de simulação:", particulas=particulas,  ciclos=ciclos)
-            escreva_variaveis(f," Configurações de variação: (caso sejam None, significa que vetor_varia foi fornecido externamente)", tipoVaria=tipoVaria, ini=ini, fin=fin, passo=passo)
+            escreva_variaveis(f," Configurações de variação:", tipoVaria=tipoVaria, ini=ini, fin=fin, passo=passo, area=area, prop=prop, vetor_varia=vetor_varia, matriz_sequencia=matriz_sequencia, vetor_lim_inf=vetor_lim_inf, vetor_lim_sup=vetor_lim_sup)
             escreva_comentario(f," Configurações de geometria e fonte:")
-            escreva_variaveis(f,"# Parâmetros do tarugo (alguns gerados automaticamente):", tarugo_esteira_pos=tarugo_esteira_pos, tarugo_comprimento=tarugo_comprimento)
+            escreva_variaveis(f,"# Parâmetros do tarugo (alguns gerados automaticamente):", vetor_tarugo_esteira_pos=vetor_tarugo_esteira_pos, vetor_tarugo_comprimento=vetor_tarugo_comprimento, vetor_prop=vetor_prop, vetor_tarugo_largura=vetor_tarugo_largura, vetor_tarugo_altura=vetor_tarugo_altura, vetor_area=vetor_area)
             escreva_variaveis(f,"# Parâmetros do colimador:",  colimador_espessura=colimador_espessura, colimador_abertura=colimador_abertura, colimador_impureza=colimador_impureza)
             escreva_variaveis(f,"# Parãmetros das fontes", fonte_cobalto_intensidade=fonte_cobalto_intensidade, fonte_raiosCosmicos_mes=fonte_raiosCosmicos_mes, fonte_raiosCosmicos_latitude=fonte_raiosCosmicos_latitude)
             escreva_variaveis(f,"# Parametros do detector", detectores_numero=detectores_numero, detectores_altura_meio=detectores_altura_meio, detectores_altura_esquerda=detectores_altura_esquerda, detectores_altura_direita=detectores_altura_direita)
@@ -234,13 +284,13 @@ def simuVariaSimplesTarugo(
             escreva_comentario(f," Espectro para resultados:")
             escreva_variaveis(f," Intervalos de energias que são divididos os tallies de fluxo e altura de pulso", intervalos_energias=intervalos_energias)
             escreva_comentario(f," Resultados:\n\n")
-            escreva_variaveis(f,"# Vetor contendo cada variação simulada",vetor_varia=vetor_varia)
             escreva_variaveis(f,"# Vetor contendo o espectro de fluxo para cada variação simulada",vetor_espectroFluxo=vetor_espectroFluxo)
             escreva_variaveis(f,"# Vetor contendo o espectro de desvio padrão do fluxo para cada variação simulada",vetor_espectroFluxo_STD=vetor_espectroFluxo_STD)
             escreva_variaveis(f,"# Vetor contendo o espectro de pulso para cada variação simulada",vetor_espectroPulso=vetor_espectroPulso)
             escreva_variaveis(f,"# Vetor contendo o espectro de desvio padrão do pulso para cada variação simulada",vetor_espectroPulso_STD=vetor_espectroPulso_STD)
 
-
+    # Volte mais uma pasta para sair do diretório de resultados
+    os.chdir("..")
 
 
 
