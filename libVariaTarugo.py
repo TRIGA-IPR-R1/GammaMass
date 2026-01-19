@@ -58,8 +58,8 @@ def simuVariaTarugo(
         passo=None,
         tipoVaria="area", #Outras opções: proporção, posição, largura, altura, comprimento, area+sequencia, area+aleatorio
         vetor_varia = None,
-        area = 100, #somente usado no caso de 'proporção'
-        prop = 1, #somente usado no caso area
+        area = None,
+        prop = 1,
         
         # Configurações de outras variações [tarugo_esteira_pos, tarugo_comprimento, prop]
         ## apenas para area+sequencia
@@ -173,15 +173,27 @@ def simuVariaTarugo(
 
         elif tipoVaria == "posição":
             tarugo_esteira_pos           = varia
+            if area is not None:
+                tarugo_largura      = np.sqrt(area*prop)
+                tarugo_altura       = np.sqrt(area/prop)
 
         elif tipoVaria == "largura":
             tarugo_largura               = varia
+            if area is not None:
+                tarugo_largura      = np.sqrt(area*prop)
+                tarugo_altura       = np.sqrt(area/prop)
 
         elif tipoVaria == "altura":
             tarugo_altura                = varia
+            if area is not None:
+                tarugo_largura      = np.sqrt(area*prop)
+                tarugo_altura       = np.sqrt(area/prop)
 
         elif tipoVaria == "comprimento":
             tarugo_comprimento = varia
+            if area is not None:
+                tarugo_largura      = np.sqrt(area*prop)
+                tarugo_altura       = np.sqrt(area/prop)
 
         else:
             sys.exit(f"Erro: Tipo de variação '{tipoVaria}' desconhecido.")
