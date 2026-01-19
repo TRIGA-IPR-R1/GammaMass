@@ -21,19 +21,25 @@ import numpy as np
 # Funções para escrita em arquivo
 from pprint import pprint
 
-def escreva_comentario(arquivo, comentario = None):
+def escreva_comentario(arquivo, comentario = ""):
     # Escreva comantário e salte linha
     arquivo.write(f"#{comentario}\n")
 
-def escreva_variaveis(arquivo, comentario = None, **kwargs):
+# Função para salvar valores das variáveis em um arquivo python
+def escreva_variaveis(arquivo, vertical=False, comentario = None, **kwargs):
     # Se for passado comentário, escreva antes da variável
     if comentario != None:
         arquivo.write(f"#{comentario}\n")
 
-    for nome, valor in kwargs.items():
-        arquivo.write(f"{nome} = ")
-        pprint(valor, stream=arquivo)
-        arquivo.write("\n")
+    #Se quiser usar escrita vertical (mais legivel), só use vertical para listas/matrizes pequenas
+    if vertical:
+        for nome, valor in kwargs.items():
+            arquivo.write(f"{nome} = ")
+            pprint(valor, stream=arquivo)
+            arquivo.write("\n")
+    else:
+        for nome, valor in kwargs.items():
+            arquivo.write(f"{nome} = {repr(valor)}\n")
 
 
 
