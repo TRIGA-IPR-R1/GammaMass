@@ -237,10 +237,16 @@ def simuVariaTarugo(
         # Rodando configurações novamente para atualizar a fonte da simulação e alterar as configurações de simulação
         detector.configurações(particulas=particulas, ciclos=ciclos)
 
-        detector.plotagem("plot.lateral.xy.png",  "xy")
-        detector.plotagem("plot.lateralMaior.xy.png",  "xy", width  = (800, 200), pixels = (2400, 800))
         detector.plotagem("plot.frontal.yz.png",  "yz", rotacionar = True)
-        #detector.plotagem("plot.superior.xz.png", "xz", rotacionar = True, origin=(0,52.35,0))
+        detector.plotagem("plot.lateral.xy.png",  "xy")
+        
+        # Plotar vista lateral maior caso o tarugo supere a borda de ar
+        borda_dir_tarugo = tarugo_esteira_pos + tarugo_comprimento / 2
+        borda_esq_tarugo = abs(tarugo_esteira_pos - tarugo_comprimento / 2)
+        maior_extensao = max(borda_dir_tarugo, borda_esq_tarugo)
+        if maior_extensao >= 200:
+            referencia_limite = maior_extensao + 10
+            detector.plotagem("plot.lateralMaior.xy.png", "xy",width  = (referencia_limite, 200), pixels = (int(referencia_limite * 4), 800))
 
 
         intervalos_energias=np.linspace(5e3,2e6,2**10).tolist() # Intervalo de 5KeV a 2MeV dividido em 2¹⁰ canais
