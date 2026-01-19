@@ -99,15 +99,15 @@ def simuVariaPosicaoTarugo():
 
 def simuVariaArea_dimensoesAleatorias():
     # Caso Variação de Área com restante dos parametros aleatorios:
-    ## Neste caso a área da sessão transversal é variada de 0 a 625 em todas simulações,
+    ## Neste caso a área da sessão transversal é variada de 0 a 500 em todas simulações,
     ## sendo possível analizar o espectro de energia do fluxo que chega ao detector e também o espectro de energia dos pulsos gerados.
     ## Este "for" abaixo repete a simulação com várias magnitudes de intensidade de fonte, com ou sem bindagem.
     ## Para cada execução do simuVariaTarugo é possível gerar 1 espectro de fluxo e 1 espectro de pulso para cada área simulada internamente.
     ## Para cada execução do simuVariaTarugo é possível gerar 1 curva de "fluxo vs. area" e 1 curva de "pulso vs. area" trabalhando dados de cada espectro referente a cada area
 
-    libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaComp_intensidade_especura", data=False)
-    libVariaTarugo.simuVariaTarugo(tipoVaria="area+aleatorio", ini=0, fin=625, passo=25, prop=1, fonte_cobalto_intensidade=7.4e5, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos)
-    libVariaTarugo.simuVariaTarugo(tipoVaria="area+aleatorio", ini=0, fin=625, passo=25, prop=1, fonte_cobalto_intensidade=7.4e5, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
+    libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaComp+intensidade+especura", data=False)
+    libVariaTarugo.simuVariaTarugo(tipoVaria="area+aleatorio", ini=0, fin=500, passo=10, prop=1, fonte_cobalto_intensidade=7.4e5, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos)
+    libVariaTarugo.simuVariaTarugo(tipoVaria="area+aleatorio", ini=0, fin=500, passo=10, prop=1, fonte_cobalto_intensidade=7.4e5, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
     os.chdir("..")
 
 
