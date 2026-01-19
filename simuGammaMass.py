@@ -16,7 +16,7 @@ os.system("clear") #Limpa tela
 
 import libVariaTarugo
 
-
+import libPlajFatorial
 
 
 # Configurações de todas simulações
@@ -24,10 +24,6 @@ libVariaTarugo.libGammaMass.simu = True
 libVariaTarugo.libGammaMass.plotar = True
 particulas = 1000000
 ciclos = 100
-
-
-
-
 
 
 
@@ -93,6 +89,55 @@ def simuVariaPosicaoTarugo():
         libVariaTarugo.simuVariaTarugo(tipoVaria="posição", ini=-250, fin=250, passo=50, area=625, tarugo_comprimento=500, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
     os.chdir("..")
     
+
+def simuVariaArea_dimensoesSequenciais():
+    # Caso Variação de Área com restante dos parametros sequeciais:
+    ## Neste caso a área da sessão transversal é variada de 0 a 500 em todas simulações,
+    ## sendo possível analizar o espectro de energia do fluxo que chega ao detector e também o espectro de energia dos pulsos gerados.
+    ## Este "for" abaixo repete a simulação com várias magnitudes de intensidade de fonte, com ou sem bindagem.
+    ## Para cada execução do simuVariaTarugo é possível gerar 1 espectro de fluxo e 1 espectro de pulso para cada área simulada internamente.
+    ## Para cada execução do simuVariaTarugo é possível gerar 1 curva de "fluxo vs. area" e 1 curva de "pulso vs. area" trabalhando dados de cada espectro referente a cada area
+ 
+    fatores_nome = [
+    "tarugo_comprimento",
+    "proporção"
+    ]
+
+    # Codificação de Fatores
+    fatores = []
+    fatores.append([  10, 0.5]) # -1
+    fatores.append([ 100,   1]) #  0
+    fatores.append([1000,   2]) # +1
+    # OBS: 
+    #       fatores[0]: -1
+    #       fatores[1]:  0 (Ponto central)
+    #       fatores[2]: +1
+    # OBS2:
+    #       fatores[1][0]: Ponto central --> tarugo_esteira_pos
+
+    #Matriz de planejamento codificada
+    matriz_planejamento = libPlajFatorial.criaPlanejamento(fatores=3, ponto_centrais=1)
+    #libPlajFat.imprime_matriz(matriz_planejamento, "Panejamento 2³ com 1 ponto central (matriz codificada)")
+
+    #Matriz de planejamento com valores reais substituidos
+    matriz_real         = libPlajFatorial.converte_matriz_real(matriz_planejamento, fatores)
+    #libPlajFat.imprime_matriz(matriz_real, "Panejamento 2³ com 1 ponto central (matriz real)")
+
+
+
+    
+    libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaComp+intensidade+especura", data=False)
+    libVariaTarugo.simuVariaTarugo(tipoVaria="area+sequencia", ini=0, fin=500, passo=10, matriz_sequencia=matriz_real, fonte_cobalto_intensidade=7.4e5, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos)
+    libVariaTarugo.simuVariaTarugo(tipoVaria="area+sequencia", ini=0, fin=500, passo=10, matriz_sequencia=matriz_real, fonte_cobalto_intensidade=7.4e5, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
+    os.chdir("..")
+
+
+
+
+
+
+
+
 
 
 
