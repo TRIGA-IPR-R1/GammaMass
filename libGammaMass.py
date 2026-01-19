@@ -584,10 +584,14 @@ class Detector:
 
         # Ar - Criar uma célula de ar ao redor de todas as outras - Froteira de vácuo
         ## Formato: Paralelepipedo
-        ## Tamanho: 
-        
-        plane_x_max_vazio = openmc.XPlane(x0=  200, boundary_type='vacuum')
-        plane_x_min_vazio = openmc.XPlane(x0= -200, boundary_type='vacuum')
+        ## Tamanho: Por padrão 200x200x200, mas pode aumentar a dimensão X se o comprimento do tarugo for maior
+    
+        borda_dir = tarugo_esteira_pos + tarugo_comprimento / 2
+        plane_x_max_vazio = openmc.XPlane(x0=borda_dir+10 if borda_dir >= 200 else 200, boundary_type='vacuum')
+
+        borda_esq = tarugo_esteira_pos - tarugo_comprimento / 2
+        plane_x_min_vazio = openmc.XPlane(x0=borda_esq-10 if borda_esq <= -200 else -200, boundary_type='vacuum')
+            
         plane_y_max_vazio = openmc.YPlane(y0=  200, boundary_type='vacuum')
         plane_y_min_vazio = openmc.YPlane(y0= -200, boundary_type='vacuum')
         plane_z_max_vazio = openmc.ZPlane(z0=  200, boundary_type='vacuum')
