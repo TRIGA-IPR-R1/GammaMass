@@ -78,6 +78,21 @@ def simuVariaComprimentoTarugo():
         libVariaTarugo.simuVariaTarugo(tipoVaria="comp", vetor_varia=vetor_varia, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos)
         libVariaTarugo.simuVariaTarugo(tipoVaria="comp", vetor_varia=vetor_varia, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
     os.chdir("..")
+    
+def simuVariaPosicaoTarugo():
+    # Caso Variação de Posição com restante dos parametros fixos:
+    ## Neste caso a área da sessão transversal e proporção são mantidas, e é variada o comprimento de 0 a  por padrão em todas simulações,
+    ## sendo possível analizar o espectro de energia do fluxo que chega ao detector e também dos pulsos gerados.
+    ## Este for abaixo repete a simulação com várias magnitudes de intensidade de fonte, com ou sem bindagem.
+    ## Para cada execução do simuVariaTarugo é possível gerar 1 espectro de fluxo e 1 espectro de pulso para cada proporção.
+    ## Para cada execução do simuVariaTarugo é possível gerar 1 curva de "fluxo vs. proporção" e 1 curva de "pulso vs. proporção"
+
+    libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaPos+intensidade+especura", data=False)
+    for fonte_cobalto_intensidade in [7.4e3, 7.4e4, 7.4e5, 7.4e6, 7.4e7]:
+        libVariaTarugo.simuVariaTarugo(tipoVaria="posição", ini=-250, fin=250, passo=50, area=625, tarugo_comprimento=500, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.7, particulas=particulas, ciclos=ciclos)
+        libVariaTarugo.simuVariaTarugo(tipoVaria="posição", ini=-250, fin=250, passo=50, area=625, tarugo_comprimento=500, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
+    os.chdir("..")
+    
 
 
 
@@ -106,6 +121,7 @@ def simuVariaArea_dimensoesAleatorias():
 #simuVariaAreaTarugo()
 #simuVariaProporcaoTarugo()
 #simuVariaComprimentoTarugo()
+simuVariaPosicaoTarugo()
 simuVariaArea_dimensoesAleatorias()
 
 
