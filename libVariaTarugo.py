@@ -249,9 +249,9 @@ def simuVariaTarugo(
             detector.plotagem("plot.lateralMaior.xy.png", "xy",width  = (referencia_limite, 200), pixels = (int(referencia_limite * 4), 800))
 
 
-        intervalos_energias=np.linspace(5e3,2e6,2**10).tolist() # Intervalo de 5KeV a 2MeV dividido em 2¹⁰ canais
         
         #Configurações de tallies
+        intervalos_energias=np.linspace(5e3,2e6,2**10).tolist() # Intervalo de 5KeV a 2MeV dividido em 2¹⁰ canais
         detector.tallies(init=True)     #Iniciar a lista de tallies
         detector.tallies_detector(energia=intervalos_energias, score="flux",         nome="espectroFluxo")           #1
         detector.tallies_detector(energia=intervalos_energias, score="pulse-height", nome="espectroPulso")           #2
@@ -266,6 +266,8 @@ def simuVariaTarugo(
     # --- Seção responsável por extrair resultados dos experimentos ---
     if libGammaMass.simu == True: # Somente extraia caso tenha sido realizada as simulações
 
+        import libCalib
+        
         libGammaMass.chdir("..") # Saia da pasta destinada a ultima simução
 
         # Crie os vetores para salvar todos os resultados (tallies de espectro)
@@ -285,11 +287,43 @@ def simuVariaTarugo(
             vetor_espectroPulso.append(espectroPulso)
             vetor_espectroPulso_STD.append(espectroPulso_STD)
 
+            # Colapsar espectro
+            fluxo_total     = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo)
+            fluxo_total_std = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo_STD)
+            pulso_total     = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso)
+            pulso_total_std = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso_STD)
 
+            # Energia A cobalto: 1.1732e6
+            # Energia B cobalto: 1.3325e6
+            energia_entre_AB_cobalto = [1.15e6, 1.35e6]
+            fluxo_entreCobalto     = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo,      intervalos_energias, energia_entre_AB_cobalto)
+            fluxo_entreCobalto_std = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo_STD,  intervalos_energias, energia_entre_AB_cobalto)
+            pulso_entreCobalto     = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso,      intervalos_energias, energia_entre_AB_cobalto)
+            pulso_entreCobalto_std = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso_STD,  intervalos_energias, energia_entre_AB_cobalto)
 
+            # Energia A cobalto: 1.1732e6
+            # Energia B cobalto: 1.3325e6
+            energia_somente_A_cobalto = [1.15e6, 1.2e6]
+            energia_somente_B_cobalto = [1.3e6, 1.35e6]
+            fluxo_somenteCobalto     = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo,      intervalos_energias, energia_somente_A_cobalto) + libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo,      intervalos_energias, energia_somente_B_cobalto)
+            fluxo_somenteCobalto_std = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo_STD,  intervalos_energias, energia_somente_A_cobalto) + libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo_STD,  intervalos_energias, energia_somente_B_cobalto)
+            pulso_somenteCobalto     = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso,      intervalos_energias, energia_somente_A_cobalto) + libCalib.sum_espectro(vetor_varia, vetor_espectroPulso,      intervalos_energias, energia_somente_B_cobalto)
+            pulso_somenteCobalto_std = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso_STD,  intervalos_energias, energia_somente_A_cobalto) + libCalib.sum_espectro(vetor_varia, vetor_espectroPulso_STD,  intervalos_energias, energia_somente_B_cobalto)
 
+            # Energia A cobalto: 1.1732e6
+            # Energia B cobalto: 1.3325e6
+            energia_abaixoCobalto = [5e3, 1.15e6]
+            fluxo_abaixoCobalto     = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo,      intervalos_energias, energia_abaixoCobalto)
+            fluxo_abaixoCobalto_std = libCalib.sum_espectro(vetor_varia, vetor_espectroFluxo_STD,  intervalos_energias, energia_abaixoCobalto)
+            pulso_abaixoCobalto     = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso,      intervalos_energias, energia_abaixoCobalto)
+            pulso_abaixoCobalto_std = libCalib.sum_espectro(vetor_varia, vetor_espectroPulso_STD,  intervalos_energias, energia_abaixoCobalto)
 
-
+            #Se o tipo de variação for area, realize a calibração
+            if tipoVaria == "area" or tipoVaria == "area+sequencia" or tipoVaria == "area+aleatorio":
+                pulso_total_calib           = libCalib.calcula_curva_calibracao_area(vetor_varia, pulso_total, plotar=False)
+                pulso_entreCobalto_calib    = libCalib.calcula_curva_calibracao_area(vetor_varia, pulso_entreCobalto, plotar=False)
+                pulso_somenteCobalto_calib  = libCalib.calcula_curva_calibracao_area(vetor_varia, pulso_somenteCobalto, plotar=False)
+                pulso_abaixoCobalto_calib   = libCalib.calcula_curva_calibracao_area(vetor_varia, pulso_abaixoCobalto, plotar=False)
 
         # --- Seção responsável por salvar entradas e saídas de todos experimentos ---
 
@@ -312,7 +346,15 @@ def simuVariaTarugo(
             escreva_variaveis(f,"# Vetor contendo o espectro de desvio padrão do fluxo para cada variação simulada",vetor_espectroFluxo_STD=vetor_espectroFluxo_STD)
             escreva_variaveis(f,"# Vetor contendo o espectro de pulso para cada variação simulada",vetor_espectroPulso=vetor_espectroPulso)
             escreva_variaveis(f,"# Vetor contendo o espectro de desvio padrão do pulso para cada variação simulada",vetor_espectroPulso_STD=vetor_espectroPulso_STD)
-
+            escreva_variaveis(f,"# Vetor contendo o espectro de desvio padrão do pulso para cada variação simulada",vetor_espectroPulso_STD=vetor_espectroPulso_STD)
+            escreva_variaveis(f,"# Fluxo e pulso total para cada variação simulada, com respectivos desvios padrão",fluxo_total=fluxo_total, fluxo_total_std=fluxo_total_std, pulso_total=pulso_total, pulso_total_std=pulso_total_std, )
+            escreva_variaveis(f,"# Fluxo e pulso entre as energias do cobalto para cada variação simulada, com respectivos desvios padrão",energia_entre_AB_cobalto=energia_entre_AB_cobalto, fluxo_entreCobalto=fluxo_entreCobalto, fluxo_entreCobalto_std=fluxo_entreCobalto_std, pulso_entreCobalto=pulso_entreCobalto, pulso_entreCobalto_std=pulso_entreCobalto_std, )
+            escreva_variaveis(f,"# Fluxo e pulso somente nas energias do cobalto para cada variação simulada, com respectivos desvios padrão",energia_somente_A_cobalto=energia_somente_A_cobalto, energia_somente_B_cobalto=energia_somente_B_cobalto, fluxo_somenteCobalto=fluxo_somenteCobalto, fluxo_somenteCobalto_std=fluxo_somenteCobalto_std, pulso_somenteCobalto=pulso_somenteCobalto, pulso_somenteCobalto_std=pulso_somenteCobalto_std, )
+            escreva_variaveis(f,"# Fluxo e pulso abaixo das energias do cobalto para cada variação simulada, com respectivos desvios padrão",energia_abaixoCobalto=energia_abaixoCobalto, fluxo_abaixoCobalto=fluxo_abaixoCobalto, fluxo_abaixoCobalto_std=fluxo_abaixoCobalto_std, pulso_abaixoCobalto=pulso_abaixoCobalto, pulso_abaixoCobalto_std=pulso_abaixoCobalto_std, )
+            
+            if tipoVaria == "area" or tipoVaria == "area+sequencia" or tipoVaria == "area+aleatorio":
+                escreva_variaveis(f,"# Variáveis relativas a calibração de área",pulso_total_calib=pulso_total_calib,pulso_entreCobalto_calib=pulso_entreCobalto_calib,pulso_somenteCobalto_calib=pulso_somenteCobalto_calib,pulso_abaixoCobalto_calib=pulso_abaixoCobalto_calib)
+            
     # Volte mais uma pasta para sair do diretório de resultados
     os.chdir("..")
 
