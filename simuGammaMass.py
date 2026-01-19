@@ -20,6 +20,8 @@ import libVariaTarugo
 
 
 # Configurações de todas simulações
+libVariaTarugo.libGammaMass.simu = True
+libVariaTarugo.libGammaMass.plotar = True
 particulas = 1000000
 ciclos = 100
 
