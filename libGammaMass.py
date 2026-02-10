@@ -247,7 +247,7 @@ class Detector:
         tarugo_altura      = 10,
         
         # Parâmetros do colimador
-        colimador_espessura = 2.7, #Espessura nominal do colimador LB-4700
+        colimador_espessura = 2.8, #Espessura nominal do colimador LB-4700
         colimador_abertura  = 7.8,  #Diametro do detector
         colimador_impureza  = 0,
         
@@ -517,7 +517,7 @@ class Detector:
         # Colimador        
         # Para tirar o colimador, basta trocar o material para ar, mas é preciso definir um valor diferente de 0 para o diâmetro externo
         if colimador_espessura>0:
-            colimador_diametro_ext = (cristal_diametro/2 + 2.8)*2
+            colimador_diametro_ext = (cristal_diametro/2 + colimador_espessura)*2
         else:
             colimador_diametro_ext = 1 #Definindo com um valor qualquer para não dar erro
 

@@ -84,7 +84,7 @@ def simuVariaTarugo(
         tarugo_altura      = 10,
 
         ## Parâmetros do colimador
-        colimador_espessura = 2.7, #Espessura nominal do colimador LB-4700
+        colimador_espessura = 2.8, #Espessura nominal do colimador LB-4700
         colimador_abertura  = 7.8, #Diametro do detector
         colimador_impureza  = 0,
         
