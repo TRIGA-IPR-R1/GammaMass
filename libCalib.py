@@ -1,3 +1,16 @@
+########################################################################
+####                                                                ####
+####       CENTRO DE DESENVOLVIMENTO DA TECNOLOGIA NUCLEAR          ####
+####     Biblioteca de Calibração Automática do Detector Gama       ####
+####                         libCalib.py                            ####
+####                                                                ####
+####             Daniel de Almeida Magalhães Campolina              ####
+####                      Lilly Salim Thein                         ####
+####                 Thalles Oliveira Campagnani                    ####
+####               Jefferson Quintão Campos Duarte                  ####
+####                                                                ####
+########################################################################
+
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 import numpy as np

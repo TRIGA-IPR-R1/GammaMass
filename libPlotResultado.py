@@ -1,3 +1,17 @@
+########################################################################
+####                                                                ####
+####       CENTRO DE DESENVOLVIMENTO DA TECNOLOGIA NUCLEAR          ####
+####    Biblioteca para plotar os resultados de forma padronizada   ####
+####                     libPlotResultado.py                        ####
+####                                                                ####
+####             Daniel de Almeida Magalhães Campolina              ####
+####                      Lilly Salim Thein                         ####
+####                 Thalles Oliveira Campagnani                    ####
+####               Jefferson Quintão Campos Duarte                  ####
+####                                                                ####
+########################################################################
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 

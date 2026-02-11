@@ -1,8 +1,8 @@
 ########################################################################
 ####                                                                ####
 ####       CENTRO DE DESENVOLVIMENTO DA TECNOLOGIA NUCLEAR          ####
-####                  Simulação do Detector Gama                    ####
-####                           simu.py                              ####
+####   Bibliteca para variar automáticamente a geometria do tarugo  ####
+####                      libVariaTarugo.py                         ####
 ####                                                                ####
 ####             Daniel de Almeida Magalhães Campolina              ####
 ####                      Lilly Salim Thein                         ####

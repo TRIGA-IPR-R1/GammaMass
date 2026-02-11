@@ -1,9 +1,13 @@
 ########################################################################
 ####                                                                ####
 ####       CENTRO DE DESENVOLVIMENTO DA TECNOLOGIA NUCLEAR          ####
+####               Biblioteca de planejamento fatorial              ####
 ####                      libPlajFatorial.py                        ####
-####             Biblioteca de planejamento fatorial                ####
+####                                                                ####
+####             Daniel de Almeida Magalhães Campolina              ####
+####                      Lilly Salim Thein                         ####
 ####                 Thalles Oliveira Campagnani                    ####
+####               Jefferson Quintão Campos Duarte                  ####
 ####                                                                ####
 ########################################################################
 

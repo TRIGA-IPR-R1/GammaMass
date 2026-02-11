@@ -1,8 +1,8 @@
 ########################################################################
 ####                                                                ####
 ####       CENTRO DE DESENVOLVIMENTO DA TECNOLOGIA NUCLEAR          ####
-####                  Simulação do Detector Gama                    ####
-####                           simu.py                              ####
+####             Casos de Simulação do Detector Gama                ####
+####                       simuGammaMass.py                         ####
 ####                                                                ####
 ####             Daniel de Almeida Magalhães Campolina              ####
 ####                      Lilly Salim Thein                         ####
