@@ -163,16 +163,16 @@ def simuVariaArea_dimensoesAleatorias():
 
 
 # Definir como funções e chamar as funções no final no código facilitar ativar e desativar o que será simulado comentando o código
-#simuVariaAreaTarugo()
-#simuVariaProporcaoTarugo()
-#simuVariaComprimentoTarugo()
 simuVariaPosicaoTarugo()
+simuVariaComprimentoTarugo()
+simuVariaProporcaoTarugo()
+simuVariaAreaTarugo()
+simuVariaArea_dimensoesSequenciais()
 simuVariaArea_dimensoesAleatorias()
 
 
 # ToDo List:
+# - nomear posições: lateral e longitudinal
 # - normalizar os resultados já na função tallies_fluxo_detector (multiplicar pela fonte e dividir pelo volume)
-# - gerar um código que geral a calibração automaticamente (faz a regreção gerando uma equação)
-# - gerar um código que calcula o erro (ou incerteza. [erro relativo mais fácil?]) da medição de área (para facilitar pode usar a mesma curva usada na calibração) em função da área
 # - analizar o gráfico e tirar uma conclusão de como achar uma incerteza (erro) representativa (incerteza pico?)
 # - gerar um gráfico da incerteza em função da intensidade da fonte de cobalto
