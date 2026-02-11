@@ -693,7 +693,7 @@ class Detector:
 
         fonte_raiosCosmicos = openmc.IndependentSource(
             space = hem_norte,
-            angle = openmc.stats.Monodirectional((0,-1,0)),
+            angle = openmc.stats.Isotropic(),
             energy = fonte_raiosCosmicos_espectro,
             strength = fonte_raiosCosmicos_intensidade,
             particle = 'photon'
