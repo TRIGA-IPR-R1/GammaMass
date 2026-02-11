@@ -61,12 +61,12 @@ def simuVariaTarugo(
         area = None,
         prop = 1,
         
-        # Configurações de outras variações [tarugo_esteira_pos, tarugo_comprimento, prop]
+        # Configurações de outras variações [tarugo_comprimento, prop]
         ## apenas para area+sequencia
         matriz_sequencia = None, #inf linhas por 3 colunas
         ## Apenas para area+aleatorio
-        vetor_lim_inf = [-9,   10, 0.5 ],
-        vetor_lim_sup = [ 9,  200,   2 ],
+        vetor_lim_inf = [  10, 0.5 ],
+        vetor_lim_sup = [ 200,   2 ],
 
 
         # Controle de pastas, para se deve voltar uma pasta acima antes de criar
@@ -150,9 +150,8 @@ def simuVariaTarugo(
             tarugo_altura       = np.sqrt(varia/prop)
             
         elif tipoVaria == "area+sequencia":
-            tarugo_esteira_pos  = matriz_sequencia[sequencia][0]
-            tarugo_comprimento  = matriz_sequencia[sequencia][1]
-            prop_seq            = matriz_sequencia[sequencia][2]
+            tarugo_comprimento  = matriz_sequencia[sequencia][0]
+            prop_seq            = matriz_sequencia[sequencia][1]
             tarugo_largura      = np.sqrt(varia*prop_seq)
             tarugo_altura       = np.sqrt(varia/prop_seq)
             # Controle da variável sequência: incremente 1 e reinicie caso supere o tamanho do vetor sequência

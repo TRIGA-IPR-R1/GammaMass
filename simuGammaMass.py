@@ -116,7 +116,7 @@ def simuVariaArea_dimensoesSequenciais():
     #       fatores[1][0]: Ponto central --> tarugo_esteira_pos
 
     #Matriz de planejamento codificada
-    matriz_planejamento = libPlajFatorial.criaPlanejamento(fatores=3, ponto_centrais=1)
+    matriz_planejamento = libPlajFatorial.criaPlanejamento(fatores=2, ponto_centrais=1)
     #libPlajFat.imprime_matriz(matriz_planejamento, "Panejamento 2³ com 1 ponto central (matriz codificada)")
 
     #Matriz de planejamento com valores reais substituidos
