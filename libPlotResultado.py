@@ -101,22 +101,64 @@ def plot_padrao(
         plt.show()
         
 
+def plot_espectro_padrao(
+        espectro,
+        intervalos_energias = None,
+        log = True,
+        salvar=None,            #Nome do arquivo para ser salvo
+        plotar=True,
+        titulo="",
+        xlabel=None,
+        ylabel=""
+    ):
+    # Lógica para definir o Eixo X
+    if intervalos_energias is None:
+        eixo_x = np.arange(len(espectro))
+        if xlabel is None:
+            label_x = 'Canal'
+    else:
+        # Garante que o vetor de energia tenha o mesmo tamanho do fluxo
+        intervalos_energias_np = np.array(intervalos_energias)
+        eixo_x = (intervalos_energias_np[:-1] + intervalos_energias_np[1:]) / 2
+        if xlabel is None:
+            label_x = 'Energia (MeV)' # Ou a unidade que você estiver usando
+
+    # Plotagem das barras
+    # O align='center' garante que a barra fique centralizada no valor do eixo X
+    plt.bar(eixo_x, espectro, width=np.diff(eixo_x)[0] if len(eixo_x) > 1 else 1.0, 
+            color='royalblue', edgecolor='white', linewidth=0.5, align='center')
+
+    # Configurações dinâmicas
+    plt.xlabel(xlabel)
+    plt.ylabel('Intensidade')
+    plt.title(f'Espectro de {label_x}')
+    plt.grid(axis='y', linestyle=':', alpha=0.5)
+
+    if log:
+        plt.yscale('log')
+        # Evita erro de log se houver zeros no espectro
+        plt.ylim(bottom=max(min(espectro)*0.1, 1e-10) if any(espectro) else None)
+
+    plt.tight_layout()
+    plt.show()
     
     
 # Só executa se for executado diretamente, caso seja importado não execute
 if __name__ == "__main__":
 
     # Substitua $$$ pela path até o diretorio que contem o arquivo de resultados
-    import $$$.resultados_simuVariaTarugo as r
-    import $$$$.resultados_simuVariaTarugo as r
+    
+    #import $$$$.resultados_simuVariaTarugo as r
 
-    # Plotar gráfico de fluxo e pulso total com barra de erro
-    plot_padrao(r.vetor_varia, r.fluxo_total, r.fluxo_total_std)
-    plot_padrao(r.vetor_varia, r.pulso_total, r.pulso_total_std)
-    # Comparar os 2 sem barra de erro
-    plot_padrao(r.vetor_varia, [r.fluxo_total, r.pulso_total])
+    ## Plotar gráfico de fluxo e pulso total com barra de erro
+    #plot_padrao(r.vetor_varia, r.fluxo_total, r.fluxo_total_std)
+    #plot_padrao(r.vetor_varia, r.pulso_total, r.pulso_total_std)
+    ## Comparar os 2 sem barra de erro
+    #plot_padrao(r.vetor_varia, [r.fluxo_total, r.pulso_total])
+    #
+    ## Repete para energia entre cobalto
+    #plot_padrao(r.vetor_varia, r.fluxo_entreCobalto, r.fluxo_entreCobalto_std)
+    #plot_padrao(r.vetor_varia, r.pulso_entreCobalto, r.pulso_entreCobalto_std)
+    #plot_padrao(r.vetor_varia, [r.fluxo_entreCobalto, r.pulso_entreCobalto])
 
-    # Repete para energia entre cobalto
-    plot_padrao(r.vetor_varia, r.fluxo_entreCobalto, r.fluxo_entreCobalto_std)
-    plot_padrao(r.vetor_varia, r.pulso_entreCobalto, r.pulso_entreCobalto_std)
-    plot_padrao(r.vetor_varia, [r.fluxo_entreCobalto, r.pulso_entreCobalto])
+    plot_espectro_padrao(r.espectroPulso, r.intervalos_energias, log=False)
