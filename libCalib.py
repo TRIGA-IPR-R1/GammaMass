@@ -46,15 +46,20 @@ def sum_espectro(vetor_varia, vetor_espectro, intervalos_energias=None, interval
         # cai dentro de uma única borda, resultando em soma 0.
 
     somatoria = []
+    for varia, espectro in zip(vetor_varia, vetor_espectro):
+        parte_espectro = espectro[idx_inicio:idx_fim]
+        somatoria.append(sum(parte_espectro))
+########################################
+#    somatoria = []
     
-    for i, varia in enumerate(vetor_varia):
-        espectro = vetor_espectro[i]
+#    for i in range(len(vetor_varia)):
+#        espectro = vetor_varia[i]
         
         # Realizamos o slice (fatiamento) da lista baseado nos índices encontrados
         # Se os opcionais não foram passados, será espectro[0 : None], ou seja, tudo.
-        parte_espectro = espectro[idx_inicio:idx_fim]
+#        parte_espectro = espectro[idx_inicio:idx_fim]
         
-        somatoria.append(sum(parte_espectro))
+#        somatoria.append(sum(parte_espectro))
         
     return somatoria
 

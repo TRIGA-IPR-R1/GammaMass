@@ -21,8 +21,8 @@ import libPlajFatorial
 
 # Configurações de todas simulações
 libVariaTarugo.libGammaMass.simu = True
-libVariaTarugo.libGammaMass.plotar = True
-particulas = 1000000
+libVariaTarugo.libGammaMass.plotar = False
+particulas = 10000
 ciclos = 100
 
 
@@ -40,7 +40,7 @@ def simuVariaAreaTarugo():
     ## Para cada execução do simuVariaTarugo é possível gerar 1 curva de "fluxo vs. area" e 1 curva de "pulso vs. area" trabalhando dados de cada espectro referente a cada area
 
     libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaArea+intensidade+especura", data=False)
-    for fonte_cobalto_intensidade in [0, 7.4e1, 7.4e2, 7.4e3, 7.4e4, 7.4e5, 7.4e6, 7.4e7]:
+    for fonte_cobalto_intensidade in [7.4e1, 7.4e2]:
         libVariaTarugo.simuVariaTarugo(tipoVaria="area", ini=0, fin=625, passo=25, prop=1, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.8, particulas=particulas, ciclos=ciclos)
         libVariaTarugo.simuVariaTarugo(tipoVaria="area", ini=0, fin=625, passo=25, prop=1, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
     os.chdir("..")
@@ -55,9 +55,9 @@ def simuVariaProporcaoTarugo():
     ## Para cada execução do simuVariaTarugo é possível gerar 1 curva de "fluxo vs. proporção" e 1 curva de "pulso vs. proporção"
 
     libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaProp+intensidade+especura", data=False)
-    for fonte_cobalto_intensidade in [0, 7.4e1, 7.4e2, 7.4e3, 7.4e4, 7.4e5, 7.4e6, 7.4e7]:
-        libVariaTarugo.simuVariaTarugo(tipoVaria="prop", ini=1, fin=2, passo=0.2, area=200, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.8, particulas=particulas, ciclos=ciclos)
-        libVariaTarugo.simuVariaTarugo(tipoVaria="prop", ini=1, fin=2, passo=0.2, area=200, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
+    for fonte_cobalto_intensidade in [7.4e1, 7.4e2]:
+        libVariaTarugo.simuVariaTarugo(tipoVaria="proporção", ini=1, fin=2, passo=0.2, area=200, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.8, particulas=particulas, ciclos=ciclos)
+        libVariaTarugo.simuVariaTarugo(tipoVaria="proporção", ini=1, fin=2, passo=0.2, area=200, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
     os.chdir("..")
 
 def simuVariaComprimentoTarugo():
@@ -69,10 +69,10 @@ def simuVariaComprimentoTarugo():
     ## Para cada execução do simuVariaTarugo é possível gerar 1 curva de "fluxo vs. proporção" e 1 curva de "pulso vs. proporção"
 
     libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaComp+intensidade+especura", data=False)
-    for fonte_cobalto_intensidade in [0, 7.4e1, 7.4e2, 7.4e3, 7.4e4, 7.4e5, 7.4e6, 7.4e7]:
+    for fonte_cobalto_intensidade in [7.4e1, 7.4e2]:
         vetor_varia = [*range(0, 1001, 100), *range(2000, 10001, 1000)]
-        libVariaTarugo.simuVariaTarugo(tipoVaria="comp", vetor_varia=vetor_varia, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.8, particulas=particulas, ciclos=ciclos)
-        libVariaTarugo.simuVariaTarugo(tipoVaria="comp", vetor_varia=vetor_varia, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
+        libVariaTarugo.simuVariaTarugo(tipoVaria="comprimento", vetor_varia=vetor_varia, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.8, particulas=particulas, ciclos=ciclos)
+        libVariaTarugo.simuVariaTarugo(tipoVaria="comprimento", vetor_varia=vetor_varia, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
     os.chdir("..")
     
 def simuVariaPosicaoTarugo():
@@ -84,7 +84,7 @@ def simuVariaPosicaoTarugo():
     ## Para cada execução do simuVariaTarugo é possível gerar 1 curva de "fluxo vs. proporção" e 1 curva de "pulso vs. proporção"
 
     libVariaTarugo.libGammaMass.mkdir("resultados_grupo_variaPos+intensidade+especura", data=False)
-    for fonte_cobalto_intensidade in [7.4e3, 7.4e4, 7.4e5, 7.4e6, 7.4e7]:
+    for fonte_cobalto_intensidade in [7.4e3, 7.4e4]:
         libVariaTarugo.simuVariaTarugo(tipoVaria="posição", ini=-250, fin=250, passo=50, area=625, tarugo_comprimento=500, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura = 2.8, particulas=particulas, ciclos=ciclos)
         libVariaTarugo.simuVariaTarugo(tipoVaria="posição", ini=-250, fin=250, passo=50, area=625, tarugo_comprimento=500, fonte_cobalto_intensidade=fonte_cobalto_intensidade, colimador_espessura =   0, particulas=particulas, ciclos=ciclos)
     os.chdir("..")
@@ -164,11 +164,11 @@ def simuVariaArea_dimensoesAleatorias():
 
 # Definir como funções e chamar as funções no final no código facilitar ativar e desativar o que será simulado comentando o código
 simuVariaPosicaoTarugo()
-simuVariaComprimentoTarugo()
-simuVariaProporcaoTarugo()
-simuVariaAreaTarugo()
-simuVariaArea_dimensoesSequenciais()
-simuVariaArea_dimensoesAleatorias()
+#simuVariaComprimentoTarugo()
+#simuVariaProporcaoTarugo()
+#simuVariaAreaTarugo()
+#simuVariaArea_dimensoesSequenciais()
+#simuVariaArea_dimensoesAleatorias()
 
 
 # ToDo List:
