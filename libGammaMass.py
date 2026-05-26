@@ -114,7 +114,7 @@ class Detector:
 
         # Material 1 - Fonte de Cobalto (Co-60)
         self.m_cobalto = openmc.Material(name='Fonte de Cobalto')
-        self.m_cobalto.add_nuclide('Co59', 1.0)
+        self.m_cobalto.add_nuclide('Co60', 1.0) # !
         self.m_cobalto.set_density('g/cm3', 8.9)
         materials.append(self.m_cobalto)
         self.colors[self.m_cobalto] = "red"
